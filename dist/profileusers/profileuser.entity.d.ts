@@ -1,0 +1,33 @@
+import { ProfileFeedItem } from '../profilefeed/profilefeed-item.entity';
+import { Follower, Following } from './follower.entity';
+import { Like } from '../like/like.entity';
+import { Repost } from '../repost/repost.entity';
+import { Save } from '../save/save.entity';
+import { Homefeed } from 'src/homefeed/homefeed.entity';
+import { UserInteraction } from 'src/homefeed/user-interaction.entity';
+import { Conversation } from 'src/message/conversation.entity';
+import { Message } from 'src/message/message.entity';
+import { Notification } from 'src/notification/notification.entity';
+export declare class ProfileUser {
+    id: number;
+    name: string;
+    tagline: string;
+    username: string;
+    image: string;
+    sentMessages: Message[];
+    conversationsAsUser1: Conversation[];
+    conversationsAsUser2: Conversation[];
+    followers: Follower[];
+    following: Following[];
+    createdPosts: Homefeed[];
+    created: ProfileFeedItem[];
+    reposted: ProfileFeedItem[];
+    liked: ProfileFeedItem[];
+    saved: ProfileFeedItem[];
+    likes: Like[];
+    reposts: Repost[];
+    saves: Save[];
+    interactions: UserInteraction[];
+    notificationsReceived: Notification[];
+    notifications: Notification[];
+}
