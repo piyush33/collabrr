@@ -51,42 +51,61 @@ export class HomefeedService {
             throw new NotFoundException('User not found');
         }
 
+        console.log("user:", user);
+
         // Get the list of users that the current user is following
         const followingUsernames = user.following.map(f => f.username);
 
-        // Fetch posts created by the followed users
-        const createdByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .leftJoinAndSelect('homefeed.createdBy', 'user')
-            .where('user.username IN (:...following)', { following: followingUsernames })
-            .getMany();
+        let createdByFollowing = [], likedByFollowing = [], repostedByFollowing = [];
 
-        console.log("createdByfollowing:", createdByFollowing);
+        if (followingUsernames.length !== 0) {
 
-        // Fetch posts liked by the followed users
-        const likedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .leftJoinAndSelect('homefeed.likes', 'like')
-            .leftJoinAndSelect('like.user', 'user')
-            .where('user.username IN (:...following)', { following: followingUsernames })
-            .getMany();
 
-        console.log("likedByfollowing:", likedByFollowing);
+            // Fetch posts created by the followed users
+            createdByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
+                .leftJoinAndSelect('homefeed.createdBy', 'user')
+                .where('user.username IN (:...following)', { following: followingUsernames })
+                .getMany();
 
-        // Fetch posts reposted by the followed users
-        const repostedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .leftJoinAndSelect('homefeed.reposts', 'repost')
-            .leftJoinAndSelect('repost.user', 'user')
-            .where('user.username IN (:...following)', { following: followingUsernames })
-            .getMany();
+            console.log("createdByfollowing:", createdByFollowing);
 
+            // Fetch posts liked by the followed users
+            likedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
+                .leftJoinAndSelect('homefeed.likes', 'like')
+                .leftJoinAndSelect('like.user', 'user')
+                .where('user.username IN (:...following)', { following: followingUsernames })
+                .getMany();
+
+            console.log("likedByfollowing:", likedByFollowing);
+
+            // Fetch posts reposted by the followed users
+            repostedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
+                .leftJoinAndSelect('homefeed.reposts', 'repost')
+                .leftJoinAndSelect('repost.user', 'user')
+                .where('user.username IN (:...following)', { following: followingUsernames })
+                .getMany();
+
+        }
 
         // Fetch the user's own created, liked, and reposted posts
-        const userPosts = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .where('homefeed.createdBy = :userId', { userId: user?.id })
-            .orWhere('homefeed.id IN (:...likedIds)', { likedIds: user.likes.map(l => l.homefeedItem?.id) })
-            .orWhere('homefeed.id IN (:...repostIds)', { repostIds: user.reposts.map(r => r.homefeedItem?.id) })
-            .getMany();
+        const likedIds = user.likes?.map(l => l.homefeedItem?.id).filter(id => id !== undefined);
+        const repostIds = user.reposts?.map(r => r.homefeedItem?.id).filter(id => id !== undefined);
+
+        const queryBuilder = this.homefeedRepository.createQueryBuilder('homefeed')
+            .where('homefeed.createdBy = :userId', { userId: user?.id });
+
+        if (likedIds && likedIds.length > 0) {
+            queryBuilder.orWhere('homefeed.id IN (:...likedIds)', { likedIds });
+        }
+
+        if (repostIds && repostIds.length > 0) {
+            queryBuilder.orWhere('homefeed.id IN (:...repostIds)', { repostIds });
+        }
+
+        const userPosts = await queryBuilder.getMany();
 
 
+        console.log("userPosts", userPosts);
 
         // Fetch random items using collaborative filtering
         const randomFeed = await this.fetchRandomItemsBasedOnUserPreferences(username);

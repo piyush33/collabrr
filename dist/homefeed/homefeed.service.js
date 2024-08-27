@@ -50,28 +50,39 @@ let HomefeedService = class HomefeedService {
         if (!user) {
             throw new common_1.NotFoundException('User not found');
         }
+        console.log("user:", user);
         const followingUsernames = user.following.map(f => f.username);
-        const createdByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .leftJoinAndSelect('homefeed.createdBy', 'user')
-            .where('user.username IN (:...following)', { following: followingUsernames })
-            .getMany();
-        console.log("createdByfollowing:", createdByFollowing);
-        const likedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .leftJoinAndSelect('homefeed.likes', 'like')
-            .leftJoinAndSelect('like.user', 'user')
-            .where('user.username IN (:...following)', { following: followingUsernames })
-            .getMany();
-        console.log("likedByfollowing:", likedByFollowing);
-        const repostedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .leftJoinAndSelect('homefeed.reposts', 'repost')
-            .leftJoinAndSelect('repost.user', 'user')
-            .where('user.username IN (:...following)', { following: followingUsernames })
-            .getMany();
-        const userPosts = await this.homefeedRepository.createQueryBuilder('homefeed')
-            .where('homefeed.createdBy = :userId', { userId: user?.id })
-            .orWhere('homefeed.id IN (:...likedIds)', { likedIds: user.likes.map(l => l.homefeedItem?.id) })
-            .orWhere('homefeed.id IN (:...repostIds)', { repostIds: user.reposts.map(r => r.homefeedItem?.id) })
-            .getMany();
+        let createdByFollowing = [], likedByFollowing = [], repostedByFollowing = [];
+        if (followingUsernames.length !== 0) {
+            createdByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
+                .leftJoinAndSelect('homefeed.createdBy', 'user')
+                .where('user.username IN (:...following)', { following: followingUsernames })
+                .getMany();
+            console.log("createdByfollowing:", createdByFollowing);
+            likedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
+                .leftJoinAndSelect('homefeed.likes', 'like')
+                .leftJoinAndSelect('like.user', 'user')
+                .where('user.username IN (:...following)', { following: followingUsernames })
+                .getMany();
+            console.log("likedByfollowing:", likedByFollowing);
+            repostedByFollowing = await this.homefeedRepository.createQueryBuilder('homefeed')
+                .leftJoinAndSelect('homefeed.reposts', 'repost')
+                .leftJoinAndSelect('repost.user', 'user')
+                .where('user.username IN (:...following)', { following: followingUsernames })
+                .getMany();
+        }
+        const likedIds = user.likes?.map(l => l.homefeedItem?.id).filter(id => id !== undefined);
+        const repostIds = user.reposts?.map(r => r.homefeedItem?.id).filter(id => id !== undefined);
+        const queryBuilder = this.homefeedRepository.createQueryBuilder('homefeed')
+            .where('homefeed.createdBy = :userId', { userId: user?.id });
+        if (likedIds && likedIds.length > 0) {
+            queryBuilder.orWhere('homefeed.id IN (:...likedIds)', { likedIds });
+        }
+        if (repostIds && repostIds.length > 0) {
+            queryBuilder.orWhere('homefeed.id IN (:...repostIds)', { repostIds });
+        }
+        const userPosts = await queryBuilder.getMany();
+        console.log("userPosts", userPosts);
         const randomFeed = await this.fetchRandomItemsBasedOnUserPreferences(username);
         const combinedFeed = [...createdByFollowing, ...likedByFollowing, ...repostedByFollowing, ...userPosts, ...randomFeed];
         const uniqueFeed = Array.from(new Set(combinedFeed.map(item => item.id)))
