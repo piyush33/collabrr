@@ -33,6 +33,12 @@ export class ProfileFeedItem {
     @Column({ nullable: true })
     weblink: string;
 
+    @Column({ nullable: true })
+    lock: boolean;
+
+    @Column({ nullable: true })
+    privacy: boolean;
+
     @ManyToOne(() => ProfileUser, (user) => user.created)
     userCreated: ProfileUser;
 

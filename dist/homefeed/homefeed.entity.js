@@ -58,6 +58,14 @@ __decorate([
     __metadata("design:type", String)
 ], Homefeed.prototype, "weblink", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], Homefeed.prototype, "lock", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], Homefeed.prototype, "privacy", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Homefeed.prototype, "createdAt", void 0);

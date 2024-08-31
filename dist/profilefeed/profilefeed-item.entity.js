@@ -55,6 +55,14 @@ __decorate([
     __metadata("design:type", String)
 ], ProfileFeedItem.prototype, "weblink", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], ProfileFeedItem.prototype, "lock", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], ProfileFeedItem.prototype, "privacy", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.created),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], ProfileFeedItem.prototype, "userCreated", void 0);

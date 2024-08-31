@@ -15,6 +15,8 @@ export declare class Homefeed {
     text: string;
     parent: string;
     weblink: string;
+    lock: boolean;
+    privacy: boolean;
     createdAt: Date;
     likes: Like[];
     reposts: Repost[];

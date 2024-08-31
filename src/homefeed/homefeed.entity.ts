@@ -36,6 +36,12 @@ export class Homefeed {
     @Column({ nullable: true })
     weblink: string;
 
+    @Column({ nullable: true })
+    lock: boolean;
+
+    @Column({ nullable: true })
+    privacy: boolean;
+
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 

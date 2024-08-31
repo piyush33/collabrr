@@ -12,6 +12,8 @@ export declare class ProfileFeedItem {
     text: string;
     parent: string;
     weblink: string;
+    lock: boolean;
+    privacy: boolean;
     userCreated: ProfileUser;
     userReposted: ProfileUser;
     userLiked: ProfileUser;
