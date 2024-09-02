@@ -8,6 +8,8 @@ export declare class ProfileFeedItemDto {
     picture?: string;
     text?: string;
     parent?: string;
+    lock: boolean;
+    privacy: boolean;
     userCreated?: User;
     userReposted?: User;
     userLiked?: User;

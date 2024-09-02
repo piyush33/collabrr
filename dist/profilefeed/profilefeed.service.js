@@ -78,6 +78,8 @@ let ProfileFeedService = class ProfileFeedService {
             picture: feedItem.picture,
             text: feedItem.text,
             parent: feedItem.parent,
+            lock: feedItem.lock,
+            privacy: feedItem.privacy,
         };
     }
 };
