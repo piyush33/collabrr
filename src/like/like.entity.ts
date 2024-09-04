@@ -12,7 +12,7 @@ export class Like {
     @ManyToOne(() => ProfileUser, (user) => user.likes, { onDelete: 'CASCADE' })
     user: ProfileUser;
 
-    @ManyToOne(() => ProfileFeedItem, (feedItem) => feedItem.likes, { cascade: true })
+    @ManyToOne(() => ProfileFeedItem, (feedItem) => feedItem.likes, { cascade: true },)
     feedItem: ProfileFeedItem;
 
     @ManyToOne(() => Homefeed, (homefeed) => homefeed.likes, { onDelete: 'CASCADE' })

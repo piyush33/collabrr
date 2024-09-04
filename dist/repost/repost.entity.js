@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", profilefeed_item_entity_1.ProfileFeedItem)
 ], Repost.prototype, "feedItem", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (homefeedItem) => homefeedItem.reposts),
+    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (homefeedItem) => homefeedItem.reposts, { onDelete: 'CASCADE' }),
     __metadata("design:type", homefeed_entity_1.Homefeed)
 ], Repost.prototype, "homefeedItem", void 0);
 exports.Repost = Repost = __decorate([

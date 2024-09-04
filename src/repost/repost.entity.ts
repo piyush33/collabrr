@@ -15,6 +15,6 @@ export class Repost {
     @ManyToOne(() => ProfileFeedItem, (feedItem) => feedItem.reposts)
     feedItem: ProfileFeedItem;
 
-    @ManyToOne(() => Homefeed, (homefeedItem) => homefeedItem.reposts)
+    @ManyToOne(() => Homefeed, (homefeedItem) => homefeedItem.reposts, { onDelete: 'CASCADE' })
     homefeedItem: Homefeed;
 }

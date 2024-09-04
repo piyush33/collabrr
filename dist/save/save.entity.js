@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", profilefeed_item_entity_1.ProfileFeedItem)
 ], Save.prototype, "feedItem", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (homefeedItem) => homefeedItem.saves),
+    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (homefeedItem) => homefeedItem.saves, { onDelete: 'CASCADE' }),
     __metadata("design:type", homefeed_entity_1.Homefeed)
 ], Save.prototype, "homefeedItem", void 0);
 exports.Save = Save = __decorate([

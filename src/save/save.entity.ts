@@ -15,6 +15,6 @@ export class Save {
     @ManyToOne(() => ProfileFeedItem, (feedItem) => feedItem.saves)
     feedItem: ProfileFeedItem;
 
-    @ManyToOne(() => Homefeed, (homefeedItem) => homefeedItem.saves)
+    @ManyToOne(() => Homefeed, (homefeedItem) => homefeedItem.saves, { onDelete: 'CASCADE' })
     homefeedItem: Homefeed;
 }
