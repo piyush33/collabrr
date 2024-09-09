@@ -18,16 +18,16 @@ export class Actor {
     @Column()
     outbox: string; // URL to actor's outbox
 
-    @Column()
+    @Column({ nullable: true })
     followers: string; // URL to actor's followers
 
-    @Column()
+    @Column({ nullable: true })
     following: string; // URL to actor's following
 
     @Column()
     publicKey: string; // Public key for actor
 
-    @Column()
+    @Column({ nullable: true })
     privateKey: string; // Private key for signing activities
 
     @OneToMany(() => Activity, (activity) => activity.actor)
