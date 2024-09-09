@@ -1,17 +1,5 @@
 import { ActorService } from './actor.service';
 import { Actor } from './actor.entity';
-export declare class WebFingerController {
-    private readonly actorService;
-    constructor(actorService: ActorService);
-    handleWebFinger(resource: string): Promise<{
-        subject: string;
-        links: {
-            rel: string;
-            type: string;
-            href: string;
-        }[];
-    }>;
-}
 export declare class ActorController {
     private readonly actorService;
     constructor(actorService: ActorService);

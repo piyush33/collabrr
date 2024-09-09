@@ -16,6 +16,7 @@ const inbox_controller_1 = require("./inbox.controller");
 const activity_service_1 = require("../activity/activity.service");
 const activity_entity_1 = require("../activity/activity.entity");
 const signature_validation_middleware_1 = require("./signature-validation.middleware");
+const webfinger_controller_1 = require("./webfinger.controller");
 let ActorModule = class ActorModule {
     configure(consumer) {
         consumer
@@ -27,7 +28,7 @@ exports.ActorModule = ActorModule;
 exports.ActorModule = ActorModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([actor_entity_1.Actor, activity_entity_1.Activity])],
-        controllers: [actor_controller_1.ActorController, inbox_controller_1.InboxController],
+        controllers: [actor_controller_1.ActorController, inbox_controller_1.InboxController, webfinger_controller_1.WebFingerController],
         providers: [actor_service_1.ActorService, activity_service_1.ActivityService],
         exports: [actor_service_1.ActorService],
     })

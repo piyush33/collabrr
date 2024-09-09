@@ -7,10 +7,11 @@ import { InboxController } from './inbox.controller';
 import { ActivityService } from 'src/activity/activity.service';
 import { Activity } from 'src/activity/activity.entity';
 import { SignatureValidationMiddleware } from './signature-validation.middleware';
+import { WebFingerController } from './webfinger.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Actor, Activity])],
-  controllers: [ActorController, InboxController],
+  controllers: [ActorController, InboxController, WebFingerController],
   providers: [ActorService, ActivityService],
   exports: [ActorService],
 })
