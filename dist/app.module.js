@@ -38,6 +38,10 @@ const conversation_entity_1 = require("./message/conversation.entity");
 const notification_module_1 = require("./notification/notification.module");
 const notification_entity_1 = require("./notification/notification.entity");
 const s3_module_1 = require("./s3/s3.module");
+const actor_module_1 = require("./actor/actor.module");
+const activity_module_1 = require("./activity/activity.module");
+const activity_entity_1 = require("./activity/activity.entity");
+const actor_entity_1 = require("./actor/actor.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -56,7 +60,7 @@ exports.AppModule = AppModule = __decorate([
                     username: configService.get('DB_USERNAME'),
                     password: configService.get('DB_PASSWORD'),
                     database: configService.get('DB_NAME'),
-                    entities: [profileuser_entity_1.ProfileUser, profilefeed_item_entity_1.ProfileFeedItem, homefeed_entity_1.Homefeed, user_entity_1.User, follower_entity_1.Follower, follower_entity_1.Following, like_entity_1.Like, repost_entity_1.Repost, save_entity_1.Save, comment_entity_1.Comment, reply_entity_1.Reply, user_interaction_entity_1.UserInteraction, message_entity_1.Message, conversation_entity_1.Conversation, notification_entity_1.Notification],
+                    entities: [profileuser_entity_1.ProfileUser, profilefeed_item_entity_1.ProfileFeedItem, homefeed_entity_1.Homefeed, user_entity_1.User, follower_entity_1.Follower, follower_entity_1.Following, like_entity_1.Like, repost_entity_1.Repost, save_entity_1.Save, comment_entity_1.Comment, reply_entity_1.Reply, user_interaction_entity_1.UserInteraction, message_entity_1.Message, conversation_entity_1.Conversation, notification_entity_1.Notification, activity_entity_1.Activity, actor_entity_1.Actor],
                     autoLoadEntities: false,
                     synchronize: true,
                 }),
@@ -74,6 +78,8 @@ exports.AppModule = AppModule = __decorate([
             message_module_1.MessageModule,
             notification_module_1.NotificationModule,
             s3_module_1.S3Module,
+            actor_module_1.ActorModule,
+            activity_module_1.ActivityModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

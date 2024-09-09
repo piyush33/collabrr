@@ -5,6 +5,7 @@ import { Comment } from '../comment/comment.entity';
 import { ProfileUser } from 'src/profileusers/profileuser.entity';
 import { UserInteraction } from './user-interaction.entity';
 import { Notification } from 'src/notification/notification.entity';
+import { Activity } from 'src/activity/activity.entity';
 export declare class Homefeed {
     id: number;
     username: string;
@@ -17,6 +18,7 @@ export declare class Homefeed {
     weblink: string;
     lock: boolean;
     privacy: boolean;
+    activities: Activity[];
     createdAt: Date;
     likes: Like[];
     reposts: Repost[];

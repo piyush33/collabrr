@@ -18,6 +18,7 @@ const comment_entity_1 = require("../comment/comment.entity");
 const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 const user_interaction_entity_1 = require("./user-interaction.entity");
 const notification_entity_1 = require("../notification/notification.entity");
+const activity_entity_1 = require("../activity/activity.entity");
 let Homefeed = class Homefeed {
 };
 exports.Homefeed = Homefeed;
@@ -65,6 +66,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], Homefeed.prototype, "privacy", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => activity_entity_1.Activity, (activity) => activity.homeFeed),
+    __metadata("design:type", Array)
+], Homefeed.prototype, "activities", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)

@@ -6,6 +6,7 @@ import { Comment } from '../comment/comment.entity';
 import { ProfileUser } from 'src/profileusers/profileuser.entity';
 import { UserInteraction } from './user-interaction.entity';
 import { Notification } from 'src/notification/notification.entity';
+import { Activity } from 'src/activity/activity.entity';
 
 @Entity()
 export class Homefeed {
@@ -41,6 +42,9 @@ export class Homefeed {
 
     @Column({ nullable: true })
     privacy: boolean;
+
+    @OneToMany(() => Activity, (activity) => activity.homeFeed)
+    activities: Activity[];
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

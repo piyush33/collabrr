@@ -19,12 +19,15 @@ const typeorm_2 = require("typeorm");
 const profileuser_entity_1 = require("./profileuser.entity");
 const profilefeed_item_entity_1 = require("../profilefeed/profilefeed-item.entity");
 const follower_entity_1 = require("./follower.entity");
+const actor_service_1 = require("../actor/actor.service");
+const crypto_1 = require("crypto");
 let ProfileusersService = class ProfileusersService {
-    constructor(usersRepository, profileFeedRepository, followersRepository, followingRepository) {
+    constructor(usersRepository, profileFeedRepository, followersRepository, followingRepository, actorService) {
         this.usersRepository = usersRepository;
         this.profileFeedRepository = profileFeedRepository;
         this.followersRepository = followersRepository;
         this.followingRepository = followingRepository;
+        this.actorService = actorService;
     }
     findOne(username) {
         return this.usersRepository.findOne({ where: { username }, relations: ['created', 'reposted', 'liked', 'saved'] });
@@ -35,11 +38,42 @@ let ProfileusersService = class ProfileusersService {
             throw new common_1.NotFoundException('User not found');
         }
         Object.assign(user, updateUserDto);
-        return this.usersRepository.save(user);
+        const savedUser = await this.usersRepository.save(user);
+        const actorData = {
+            preferredUsername: savedUser?.username,
+            name: savedUser?.name,
+            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
+            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
+            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
+            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
+            summary: savedUser?.tagline,
+        };
+        const existingActor = await this.actorService.findByUsername(username);
+        if (existingActor) {
+            await this.actorService.updateActor(existingActor.id, actorData);
+        }
+        return savedUser;
     }
     async create(userDto) {
         const user = this.usersRepository.create(userDto);
-        return this.usersRepository.save(user);
+        const savedUser = await this.usersRepository.save(user);
+        const { publicKey, privateKey } = (0, crypto_1.generateKeyPairSync)('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: { type: 'spki', format: 'pem' },
+            privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+        });
+        const actorData = {
+            preferredUsername: savedUser?.username,
+            name: savedUser?.name,
+            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
+            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
+            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
+            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
+            summary: savedUser?.tagline,
+            publicKey: publicKey,
+        };
+        await this.actorService.createActor(actorData);
+        return savedUser;
     }
     async addFollower(username, followerDto) {
         const user = await this.usersRepository.findOne({
@@ -179,6 +213,7 @@ exports.ProfileusersService = ProfileusersService = __decorate([
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        actor_service_1.ActorService])
 ], ProfileusersService);
 //# sourceMappingURL=profileusers.service.js.map

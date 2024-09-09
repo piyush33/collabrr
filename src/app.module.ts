@@ -29,6 +29,10 @@ import { Conversation } from './message/conversation.entity';
 import { NotificationModule } from './notification/notification.module';
 import { Notification } from './notification/notification.entity';
 import { S3Module } from './s3/s3.module';
+import { ActorModule } from './actor/actor.module';
+import { ActivityModule } from './activity/activity.module';
+import { Activity } from './activity/activity.entity';
+import { Actor } from './actor/actor.entity';
 
 
 @Module({
@@ -45,7 +49,7 @@ import { S3Module } from './s3/s3.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [ProfileUser, ProfileFeedItem, Homefeed, User, Follower, Following, Like, Repost, Save, Comment, Reply, UserInteraction, Message, Conversation, Notification],
+        entities: [ProfileUser, ProfileFeedItem, Homefeed, User, Follower, Following, Like, Repost, Save, Comment, Reply, UserInteraction, Message, Conversation, Notification, Activity, Actor],
         autoLoadEntities: false,
         synchronize: true,
       }),
@@ -63,6 +67,8 @@ import { S3Module } from './s3/s3.module';
     MessageModule,
     NotificationModule,
     S3Module,
+    ActorModule,
+    ActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

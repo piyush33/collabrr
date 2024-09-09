@@ -5,6 +5,9 @@ import { ProfileUser } from './profileuser.entity';
 import { ProfileFeedItem } from '../profilefeed/profilefeed-item.entity';
 import { Follower, Following } from './follower.entity';
 import { FollowerDto, FollowingDto } from 'src/dto/profileuser.dto';
+import { ActorService } from 'src/actor/actor.service';
+import { Actor } from 'src/actor/actor.entity';
+import { generateKeyPairSync } from 'crypto';
 
 
 @Injectable()
@@ -18,6 +21,7 @@ export class ProfileusersService {
         private followersRepository: Repository<Follower>,
         @InjectRepository(Following)
         private followingRepository: Repository<Following>,
+        private readonly actorService: ActorService,
     ) { }
 
     findOne(username: string): Promise<ProfileUser> {
@@ -30,12 +34,52 @@ export class ProfileusersService {
             throw new NotFoundException('User not found');
         }
         Object.assign(user, updateUserDto);
-        return this.usersRepository.save(user);
+        const savedUser = await this.usersRepository.save(user);
+
+        // Step 2: Create Actor for the created ProfileUser
+        const actorData: Partial<Actor> = {
+            preferredUsername: savedUser?.username,
+            name: savedUser?.name,
+            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
+            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
+            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
+            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
+            summary: savedUser?.tagline, // Use the bio of the ProfileUser for the Actor summary
+        };
+
+        const existingActor = await this.actorService.findByUsername(username);
+        if (existingActor) {
+            await this.actorService.updateActor(existingActor.id, actorData);
+        }
+
+        return savedUser;
     }
 
     async create(userDto: Partial<ProfileUser>): Promise<ProfileUser> {
         const user = this.usersRepository.create(userDto);
-        return this.usersRepository.save(user);
+        const savedUser = await this.usersRepository.save(user);
+
+        const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: { type: 'spki', format: 'pem' },
+            privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+        });
+
+        // Step 2: Create Actor for the created ProfileUser
+        const actorData: Partial<Actor> = {
+            preferredUsername: savedUser?.username,
+            name: savedUser?.name,
+            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
+            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
+            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
+            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
+            summary: savedUser?.tagline, // Use the bio of the ProfileUser for the Actor summary
+            publicKey: publicKey,
+        };
+
+        await this.actorService.createActor(actorData); // Call ActorService to create an Actor
+
+        return savedUser;
     }
 
     async addFollower(username: string, followerDto: FollowerDto): Promise<FollowerDto> {

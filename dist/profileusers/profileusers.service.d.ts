@@ -3,12 +3,14 @@ import { ProfileUser } from './profileuser.entity';
 import { ProfileFeedItem } from '../profilefeed/profilefeed-item.entity';
 import { Follower, Following } from './follower.entity';
 import { FollowerDto, FollowingDto } from 'src/dto/profileuser.dto';
+import { ActorService } from 'src/actor/actor.service';
 export declare class ProfileusersService {
     private usersRepository;
     private profileFeedRepository;
     private followersRepository;
     private followingRepository;
-    constructor(usersRepository: Repository<ProfileUser>, profileFeedRepository: Repository<ProfileFeedItem>, followersRepository: Repository<Follower>, followingRepository: Repository<Following>);
+    private readonly actorService;
+    constructor(usersRepository: Repository<ProfileUser>, profileFeedRepository: Repository<ProfileFeedItem>, followersRepository: Repository<Follower>, followingRepository: Repository<Following>, actorService: ActorService);
     findOne(username: string): Promise<ProfileUser>;
     update(username: string, updateUserDto: Partial<ProfileUser>): Promise<ProfileUser>;
     create(userDto: Partial<ProfileUser>): Promise<ProfileUser>;
