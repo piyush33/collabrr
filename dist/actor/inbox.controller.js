@@ -26,7 +26,15 @@ let InboxController = class InboxController {
         if (!actor) {
             throw new common_1.NotFoundException('Actor not found');
         }
-        return this.activityService.createActivity(activity.type, actor.id, activity);
+        console.log(`Received activity for ${username}:`, activity);
+        const result = await this.activityService.createActivity(activity.type, actor.id, activity);
+        return {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            type: 'Accept',
+            actor: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${username}`,
+            object: activity,
+            result: 'Activity processed successfully',
+        };
     }
     async sendActivities(username) {
         const actor = await this.actorService.findByUsername(username);
@@ -36,9 +44,9 @@ let InboxController = class InboxController {
         const activities = await this.activityService.getActivitiesForActor(actor.id);
         return {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'type': 'OrderedCollection',
-            'totalItems': activities.length,
-            'orderedItems': activities.map((activity) => ({
+            type: 'OrderedCollection',
+            totalItems: activities.length,
+            orderedItems: activities.map((activity) => ({
                 id: `https://d3kv9nj5wp3sq6.cloudfront.net/activities/${activity.id}`,
                 type: activity.type,
                 actor: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${username}`,
