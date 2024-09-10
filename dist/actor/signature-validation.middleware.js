@@ -28,14 +28,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignatureValidationMiddleware = void 0;
 const common_1 = require("@nestjs/common");
 const crypto = __importStar(require("crypto"));
-const node_fetch_1 = __importDefault(require("node-fetch"));
 let SignatureValidationMiddleware = class SignatureValidationMiddleware {
     async use(req, res, next) {
         const signatureHeader = req.headers['signature'];
@@ -69,7 +65,8 @@ let SignatureValidationMiddleware = class SignatureValidationMiddleware {
         };
     }
     async fetchPublicKey(keyId) {
-        const response = await (0, node_fetch_1.default)(keyId);
+        const fetch = (await Promise.resolve().then(() => __importStar(require('node-fetch')))).default;
+        const response = await fetch(keyId);
         if (!response.ok) {
             throw new common_1.BadRequestException('Failed to fetch public key');
         }

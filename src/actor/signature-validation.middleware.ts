@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, BadRequestException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as crypto from 'crypto';
-import fetch from 'node-fetch';
+
 
 interface PublicKeyResponse {
     publicKeyPem: string;  // Define the structure for the public key response
@@ -9,9 +9,12 @@ interface PublicKeyResponse {
 
 @Injectable()
 export class SignatureValidationMiddleware implements NestMiddleware {
+
     async use(req: Request, res: Response, next: NextFunction) {
         const signatureHeader = req.headers['signature'] as string;
         const digestHeader = req.headers['digest'] as string;
+
+
 
         if (!signatureHeader || !digestHeader) {
             throw new BadRequestException('Missing signature or digest header');
@@ -55,6 +58,7 @@ export class SignatureValidationMiddleware implements NestMiddleware {
 
     async fetchPublicKey(keyId: string): Promise<string> {
         // Fetch the public key using the keyId URL
+        const fetch = (await import('node-fetch')).default;
         const response = await fetch(keyId);
         if (!response.ok) {
             throw new BadRequestException('Failed to fetch public key');
