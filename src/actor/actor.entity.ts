@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Activity } from '../activity/activity.entity';
 
 @Entity('actors')
@@ -18,12 +18,6 @@ export class Actor {
     @Column()
     outbox: string; // URL to actor's outbox
 
-    @Column({ nullable: true })
-    followers: string; // URL to actor's followers
-
-    @Column({ nullable: true })
-    following: string; // URL to actor's following
-
     @Column()
     publicKey: string; // Public key for actor
 
@@ -35,6 +29,14 @@ export class Actor {
 
     @Column({ nullable: true })
     summary?: string;
+
+    @ManyToMany(() => Actor, actor => actor.following)
+    @JoinTable()
+    followers: Actor[];
+
+    @ManyToMany(() => Actor, actor => actor.followers)
+    @JoinTable()
+    following: Actor[];
 
     // Derived URLs based on the domain
     get inboxUrl() {

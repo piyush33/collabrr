@@ -52,13 +52,59 @@ export class ActorController {
         return this.actorService.updateActor(id, updateData);
     }
 
+
+    @Get(':username/followers')
+    async getFollowers(@Param('username') username: string) {
+        const actor = await this.actorService.findByUsername(username);
+
+        if (!actor) {
+            throw new NotFoundException('Actor not found');
+        }
+
+        // Fetch followers from your data model and return them in ActivityPub format
+        const followers = await this.actorService.getFollowers(actor.id);  // Assuming this method fetches the followers
+
+        return {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/followers`,
+            type: 'OrderedCollection',
+            totalItems: followers.length,
+            orderedItems: followers.map(follower => ({
+                id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${follower.preferredUsername}`,
+                type: 'Person',
+            })),
+        };
+    }
+
+    @Get(':username/following')
+    async getFollowing(@Param('username') username: string) {
+        const actor = await this.actorService.findByUsername(username);
+
+        if (!actor) {
+            throw new NotFoundException('Actor not found');
+        }
+
+        // Fetch following users from your data model and return them in ActivityPub format
+        const following = await this.actorService.getFollowing(actor.id);  // Assuming this method fetches the following users
+
+        return {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/following`,
+            type: 'OrderedCollection',
+            totalItems: following.length,
+            orderedItems: following.map(followingUser => ({
+                id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${followingUser.preferredUsername}`,
+                type: 'Person',
+            })),
+        };
+    }
     /**
      * Initiate a follow request for an Actor.
      */
     @Post(':actorId/follow')
     async followActor(
         @Param('actorId') actorId: number,
-        @Body() { targetActor }: { targetActor: string },
+        @Body() { targetActorId }: { targetActorId: number },
     ) {
         const actor = await this.actorService.findById(actorId);
 
@@ -67,7 +113,7 @@ export class ActorController {
         }
 
         // Follow the target actor using the ActorService
-        return this.actorService.follow(actorId, targetActor);
+        return this.actorService.follow(actorId, targetActorId);
     }
 
     /**
@@ -77,8 +123,8 @@ export class ActorController {
     @Post(':actorId/acceptFollow')
     async acceptFollowRequest(
         @Param('actorId') actorId: number,
-        @Body() { follower }: { follower: string },
+        @Body() { followerId }: { followerId: number },
     ) {
-        return this.actorService.acceptFollowRequest(actorId, follower);
+        return this.actorService.acceptFollowRequest(actorId, followerId);
     }
 }

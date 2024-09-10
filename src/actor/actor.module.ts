@@ -15,11 +15,11 @@ import { WebFingerController } from './webfinger.controller';
   providers: [ActorService, ActivityService],
   exports: [ActorService],
 })
-export class ActorModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // Apply the SignatureValidationMiddleware only to the inbox POST route
-    consumer
-      .apply(SignatureValidationMiddleware)
-      .forRoutes({ path: 'actors/:actorId/inbox', method: RequestMethod.POST });
-  }
+export class ActorModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   // Apply the SignatureValidationMiddleware only to the inbox POST route
+  //   consumer
+  //     .apply(SignatureValidationMiddleware)
+  //     .forRoutes({ path: 'actors/:actorId/inbox', method: RequestMethod.POST });
+  // }
 }

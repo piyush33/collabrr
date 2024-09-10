@@ -48,15 +48,49 @@ let ActorController = class ActorController {
     async updateActor(id, updateData) {
         return this.actorService.updateActor(id, updateData);
     }
-    async followActor(actorId, { targetActor }) {
+    async getFollowers(username) {
+        const actor = await this.actorService.findByUsername(username);
+        if (!actor) {
+            throw new common_1.NotFoundException('Actor not found');
+        }
+        const followers = await this.actorService.getFollowers(actor.id);
+        return {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/followers`,
+            type: 'OrderedCollection',
+            totalItems: followers.length,
+            orderedItems: followers.map(follower => ({
+                id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${follower.preferredUsername}`,
+                type: 'Person',
+            })),
+        };
+    }
+    async getFollowing(username) {
+        const actor = await this.actorService.findByUsername(username);
+        if (!actor) {
+            throw new common_1.NotFoundException('Actor not found');
+        }
+        const following = await this.actorService.getFollowing(actor.id);
+        return {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/following`,
+            type: 'OrderedCollection',
+            totalItems: following.length,
+            orderedItems: following.map(followingUser => ({
+                id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${followingUser.preferredUsername}`,
+                type: 'Person',
+            })),
+        };
+    }
+    async followActor(actorId, { targetActorId }) {
         const actor = await this.actorService.findById(actorId);
         if (!actor) {
             throw new common_1.NotFoundException('Actor not found');
         }
-        return this.actorService.follow(actorId, targetActor);
+        return this.actorService.follow(actorId, targetActorId);
     }
-    async acceptFollowRequest(actorId, { follower }) {
-        return this.actorService.acceptFollowRequest(actorId, follower);
+    async acceptFollowRequest(actorId, { followerId }) {
+        return this.actorService.acceptFollowRequest(actorId, followerId);
     }
 };
 exports.ActorController = ActorController;
@@ -82,6 +116,20 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ActorController.prototype, "updateActor", null);
+__decorate([
+    (0, common_1.Get)(':username/followers'),
+    __param(0, (0, common_1.Param)('username')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ActorController.prototype, "getFollowers", null);
+__decorate([
+    (0, common_1.Get)(':username/following'),
+    __param(0, (0, common_1.Param)('username')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ActorController.prototype, "getFollowing", null);
 __decorate([
     (0, common_1.Post)(':actorId/follow'),
     __param(0, (0, common_1.Param)('actorId')),

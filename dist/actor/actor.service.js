@@ -25,7 +25,7 @@ let ActorService = class ActorService {
         return this.actorRepository.findOne({ where: { preferredUsername: username } });
     }
     async findById(id) {
-        return await this.actorRepository.findOne({ where: { id } });
+        return await this.actorRepository.findOne({ where: { id }, relations: ['followers', 'following'] });
     }
     async createActor(data) {
         const actor = this.actorRepository.create(data);
@@ -39,18 +39,41 @@ let ActorService = class ActorService {
         Object.assign(actor, updateData);
         return this.actorRepository.save(actor);
     }
-    async follow(actorId, targetActorUrl) {
-        const actor = await this.findById(actorId);
+    async getFollowers(actorId) {
+        const actor = await this.actorRepository.findOne({
+            where: { id: actorId },
+            relations: ['followers'],
+        });
         if (!actor) {
             throw new common_1.NotFoundException('Actor not found');
         }
+        return actor.followers;
+    }
+    async getFollowing(actorId) {
+        const actor = await this.actorRepository.findOne({
+            where: { id: actorId },
+            relations: ['following'],
+        });
+        if (!actor) {
+            throw new common_1.NotFoundException('Actor not found');
+        }
+        return actor.following;
+    }
+    async follow(actorId, targetActorId) {
+        const actor = await this.findById(actorId);
+        const targetActor = await this.findById(targetActorId);
+        if (!actor || !targetActor) {
+            throw new common_1.NotFoundException('Actor or target actor not found');
+        }
+        actor.following.push(targetActor);
+        await this.actorRepository.save(actor);
         const followActivity = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             type: 'Follow',
             actor: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
-            object: targetActorUrl,
+            object: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${targetActor.preferredUsername}`,
         };
-        const targetActorInbox = `${targetActorUrl}/inbox`;
+        const targetActorInbox = `${targetActor.inbox}/inbox`;
         const response = await fetch(targetActorInbox, {
             method: 'POST',
             body: JSON.stringify(followActivity),
@@ -59,14 +82,13 @@ let ActorService = class ActorService {
         if (!response.ok) {
             throw new Error(`Failed to send follow activity: ${response.statusText}`);
         }
-        actor.following += `, ${targetActorUrl}`;
-        this.actorRepository.save(actor);
-        return { status: 'Follow request sent', target: targetActorUrl };
+        return { status: 'Follow request sent', target: targetActor.preferredUsername };
     }
-    async acceptFollowRequest(actorId, followerUrl) {
+    async acceptFollowRequest(actorId, followerId) {
         const actor = await this.findById(actorId);
-        if (!actor) {
-            throw new common_1.NotFoundException('Actor not found');
+        const follower = await this.findById(followerId);
+        if (!actor || !follower) {
+            throw new common_1.NotFoundException('Actor or follower not found');
         }
         const acceptActivity = {
             '@context': 'https://www.w3.org/ns/activitystreams',
@@ -74,11 +96,11 @@ let ActorService = class ActorService {
             actor: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
             object: {
                 type: 'Follow',
-                actor: followerUrl,
+                actor: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${follower.preferredUsername}`,
                 object: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
             },
         };
-        const followerInbox = `${followerUrl}/inbox`;
+        const followerInbox = `${follower.inbox}/inbox`;
         const response = await fetch(followerInbox, {
             method: 'POST',
             body: JSON.stringify(acceptActivity),
@@ -87,7 +109,9 @@ let ActorService = class ActorService {
         if (!response.ok) {
             throw new Error(`Failed to send accept activity: ${response.statusText}`);
         }
-        return { status: 'Follow request accepted', follower: followerUrl };
+        actor.followers.push(follower);
+        await this.actorRepository.save(actor);
+        return { status: 'Follow request accepted', follower: follower.preferredUsername };
     }
 };
 exports.ActorService = ActorService;

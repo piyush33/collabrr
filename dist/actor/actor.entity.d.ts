@@ -5,12 +5,12 @@ export declare class Actor {
     name: string;
     inbox: string;
     outbox: string;
-    followers: string;
-    following: string;
     publicKey: string;
     privateKey: string;
     activities: Activity[];
     summary?: string;
+    followers: Actor[];
+    following: Actor[];
     get inboxUrl(): string;
     get outboxUrl(): string;
     get followersUrl(): string;

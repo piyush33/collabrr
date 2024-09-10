@@ -7,6 +7,8 @@ export declare class ActorService {
     findById(id: number): Promise<Actor | null>;
     createActor(data: Partial<Actor>): Promise<Actor>;
     updateActor(id: number, updateData: Partial<Actor>): Promise<Actor>;
-    follow(actorId: number, targetActorUrl: string): Promise<any>;
-    acceptFollowRequest(actorId: number, followerUrl: string): Promise<any>;
+    getFollowers(actorId: number): Promise<Actor[]>;
+    getFollowing(actorId: number): Promise<Actor[]>;
+    follow(actorId: number, targetActorId: number): Promise<any>;
+    acceptFollowRequest(actorId: number, followerId: number): Promise<any>;
 }

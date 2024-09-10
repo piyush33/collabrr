@@ -48,14 +48,6 @@ __decorate([
     __metadata("design:type", String)
 ], Actor.prototype, "outbox", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Actor.prototype, "followers", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Actor.prototype, "following", void 0);
-__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Actor.prototype, "publicKey", void 0);
@@ -71,6 +63,16 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Actor.prototype, "summary", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => Actor, actor => actor.following),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], Actor.prototype, "followers", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => Actor, actor => actor.followers),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], Actor.prototype, "following", void 0);
 exports.Actor = Actor = __decorate([
     (0, typeorm_1.Entity)('actors')
 ], Actor);

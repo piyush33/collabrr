@@ -15,14 +15,8 @@ const actor_controller_1 = require("./actor.controller");
 const inbox_controller_1 = require("./inbox.controller");
 const activity_service_1 = require("../activity/activity.service");
 const activity_entity_1 = require("../activity/activity.entity");
-const signature_validation_middleware_1 = require("./signature-validation.middleware");
 const webfinger_controller_1 = require("./webfinger.controller");
 let ActorModule = class ActorModule {
-    configure(consumer) {
-        consumer
-            .apply(signature_validation_middleware_1.SignatureValidationMiddleware)
-            .forRoutes({ path: 'actors/:actorId/inbox', method: common_1.RequestMethod.POST });
-    }
 };
 exports.ActorModule = ActorModule;
 exports.ActorModule = ActorModule = __decorate([

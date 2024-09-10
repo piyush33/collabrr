@@ -22,10 +22,30 @@ export declare class ActorController {
     }>;
     createActor(actorData: Partial<Actor>): Promise<Actor>;
     updateActor(id: number, updateData: Partial<Actor>): Promise<Actor>;
-    followActor(actorId: number, { targetActor }: {
-        targetActor: string;
+    getFollowers(username: string): Promise<{
+        '@context': string;
+        id: string;
+        type: string;
+        totalItems: number;
+        orderedItems: {
+            id: string;
+            type: string;
+        }[];
+    }>;
+    getFollowing(username: string): Promise<{
+        '@context': string;
+        id: string;
+        type: string;
+        totalItems: number;
+        orderedItems: {
+            id: string;
+            type: string;
+        }[];
+    }>;
+    followActor(actorId: number, { targetActorId }: {
+        targetActorId: number;
     }): Promise<any>;
-    acceptFollowRequest(actorId: number, { follower }: {
-        follower: string;
+    acceptFollowRequest(actorId: number, { followerId }: {
+        followerId: number;
     }): Promise<any>;
 }
