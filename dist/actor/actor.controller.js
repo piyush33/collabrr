@@ -26,19 +26,15 @@ let ActorController = class ActorController {
         }
         return {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
+            id: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}`,
             type: 'Person',
             preferredUsername: actor.preferredUsername,
             name: actor.name,
-            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/inbox`,
-            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/outbox`,
-            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/followers`,
-            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/following`,
-            publicKey: {
-                id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}#main-key`,
-                owner: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
-                publicKeyPem: actor.publicKey
-            },
+            inbox: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/inbox`,
+            outbox: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/outbox`,
+            liked: `https://88d7-103-167-205-155.ngrok-free.app/actors/liked`,
+            followers: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/followers`,
+            following: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/following`,
             summary: actor.summary || '',
         };
     }
@@ -92,10 +88,23 @@ let ActorController = class ActorController {
     async acceptFollowRequest(actorId, { followerId }) {
         return this.actorService.acceptFollowRequest(actorId, followerId);
     }
+    async getLiked(username) {
+        const actor = await this.actorService.findByUsername(username);
+        if (!actor) {
+            throw new common_1.NotFoundException('Actor not found');
+        }
+        return {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            type: 'OrderedCollection',
+            totalItems: 0,
+            orderedItems: [],
+        };
+    }
 };
 exports.ActorController = ActorController;
 __decorate([
     (0, common_1.Get)(':username'),
+    (0, common_1.Header)('Content-Type', 'application/ld+json'),
     __param(0, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -146,6 +155,13 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ActorController.prototype, "acceptFollowRequest", null);
+__decorate([
+    (0, common_1.Get)('liked'),
+    __param(0, (0, common_1.Param)('username')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ActorController.prototype, "getLiked", null);
 exports.ActorController = ActorController = __decorate([
     (0, common_1.Controller)('actors'),
     __metadata("design:paramtypes", [actor_service_1.ActorService])

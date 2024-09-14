@@ -32,20 +32,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignatureValidationMiddleware = void 0;
 const common_1 = require("@nestjs/common");
 const crypto = __importStar(require("crypto"));
+const fetch = require('node-fetch');
 let SignatureValidationMiddleware = class SignatureValidationMiddleware {
     async use(req, res, next) {
         const signatureHeader = req.headers['signature'];
-        const digestHeader = req.headers['digest'];
-        if (!signatureHeader || !digestHeader) {
-            throw new common_1.BadRequestException('Missing signature or digest header');
+        if (!signatureHeader) {
+            throw new common_1.BadRequestException('Missing signature header');
         }
-        const bodyDigest = crypto.createHash('sha256').update(JSON.stringify(req.body)).digest('base64');
-        if (digestHeader !== `SHA-256=${bodyDigest}`) {
-            throw new common_1.BadRequestException('Invalid digest');
-        }
+        console.log('Parsed Signature Header:', signatureHeader);
         const { keyId, signature, headers } = this.parseSignatureHeader(signatureHeader);
+        console.log('Signature:', signature);
         const publicKey = await this.fetchPublicKey(keyId);
-        const isSignatureValid = this.verifySignature(req, headers, signature, publicKey);
+        console.log('Public Key:', publicKey);
+        const { method, originalUrl } = req;
+        const requestTarget = `(request-target): ${method.toLowerCase()} ${originalUrl.toLowerCase()}`;
+        const signingString = [
+            requestTarget,
+            ...headers.filter(header => header !== '(request-target)').map(header => `${header.toLowerCase()}: ${req.headers[header.toLowerCase()]}`)
+        ].join('\n');
+        console.log('Signature String:', signingString);
+        const verifier = crypto.createVerify('RSA-SHA256');
+        verifier.update(signingString);
+        verifier.end();
+        const isSignatureValid = verifier.verify(publicKey, signature, 'base64');
         if (!isSignatureValid) {
             throw new common_1.BadRequestException('Invalid signature');
         }
@@ -65,23 +74,18 @@ let SignatureValidationMiddleware = class SignatureValidationMiddleware {
         };
     }
     async fetchPublicKey(keyId) {
-        const fetch = (await Promise.resolve().then(() => __importStar(require('node-fetch')))).default;
-        const response = await fetch(keyId);
+        const publicKeyUrl = keyId.split('#')[0];
+        console.log("Fetching public key from:", publicKeyUrl);
+        const response = await fetch(publicKeyUrl);
         if (!response.ok) {
             throw new common_1.BadRequestException('Failed to fetch public key');
         }
-        const data = (await response.json());
-        if (!data.publicKeyPem) {
+        console.log("response:", response);
+        const data = await response.json();
+        if (!data.publicKey || !data.publicKey.publicKeyPem) {
             throw new common_1.BadRequestException('Invalid public key response');
         }
-        return data.publicKeyPem;
-    }
-    verifySignature(req, headers, signature, publicKey) {
-        const signingString = headers.map(header => `${header}: ${req.headers[header]}`).join('\n');
-        const verifier = crypto.createVerify('SHA256');
-        verifier.update(signingString);
-        verifier.end();
-        return verifier.verify(publicKey, signature, 'base64');
+        return data.publicKey.publicKeyPem;
     }
 };
 exports.SignatureValidationMiddleware = SignatureValidationMiddleware;

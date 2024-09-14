@@ -18,6 +18,9 @@ export class Actor {
     @Column()
     outbox: string; // URL to actor's outbox
 
+    @Column({ nullable: true })
+    liked: string; // URL to the liked collection
+
     @Column()
     publicKey: string; // Public key for actor
 

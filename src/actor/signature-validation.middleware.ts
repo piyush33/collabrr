@@ -1,39 +1,64 @@
 import { Injectable, NestMiddleware, BadRequestException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as crypto from 'crypto';
+const fetch = require('node-fetch');
+
 
 
 interface PublicKeyResponse {
-    publicKeyPem: string;  // Define the structure for the public key response
+    '@context': any[];  // Context array that can contain multiple items
+    id: string;  // The ID of the actor
+    type: string;  // The type of the actor
+    inbox: string;  // Inbox URL
+    outbox: string;  // Outbox URL
+    preferredUsername: string;  // Preferred username of the actor
+    publicKey: {
+        id: string;  // ID of the public key
+        owner: string;  // Owner of the public key
+        publicKeyPem: string;  // The actual public key in PEM format
+    };
+    endpoints?: {  // Optional endpoints like sharedInbox
+        sharedInbox?: string;
+    };
 }
 
 @Injectable()
 export class SignatureValidationMiddleware implements NestMiddleware {
-
     async use(req: Request, res: Response, next: NextFunction) {
         const signatureHeader = req.headers['signature'] as string;
-        const digestHeader = req.headers['digest'] as string;
-
-
-
-        if (!signatureHeader || !digestHeader) {
-            throw new BadRequestException('Missing signature or digest header');
+        if (!signatureHeader) {
+            throw new BadRequestException('Missing signature header');
         }
 
-        // Verify the digest header matches the body
-        const bodyDigest = crypto.createHash('sha256').update(JSON.stringify(req.body)).digest('base64');
-        if (digestHeader !== `SHA-256=${bodyDigest}`) {
-            throw new BadRequestException('Invalid digest');
-        }
+        console.log('Parsed Signature Header:', signatureHeader);
 
         // Parse the Signature Header
         const { keyId, signature, headers } = this.parseSignatureHeader(signatureHeader);
+        console.log('Signature:', signature);
 
-        // Fetch Public Key from keyId URL
+
+        // Fetch Public Key from Mastodon
         const publicKey = await this.fetchPublicKey(keyId);
 
+        console.log('Public Key:', publicKey);
+
+
+        // Recreate the signing string
+        const { method, originalUrl } = req;
+        const requestTarget = `(request-target): ${method.toLowerCase()} ${originalUrl.toLowerCase()}`;
+        const signingString = [
+            requestTarget, // Add the request-target manually
+            ...headers.filter(header => header !== '(request-target)').map(header => `${header.toLowerCase()}: ${req.headers[header.toLowerCase()]}`)
+        ].join('\n');
+
+        console.log('Signature String:', signingString);
+
         // Verify Signature
-        const isSignatureValid = this.verifySignature(req, headers, signature, publicKey);
+        const verifier = crypto.createVerify('RSA-SHA256');
+        verifier.update(signingString);
+        verifier.end();
+
+        const isSignatureValid = verifier.verify(publicKey, signature, 'base64');
         if (!isSignatureValid) {
             throw new BadRequestException('Invalid signature');
         }
@@ -42,7 +67,6 @@ export class SignatureValidationMiddleware implements NestMiddleware {
     }
 
     parseSignatureHeader(signatureHeader: string): any {
-        // Basic parsing logic (You might need a more robust parser depending on your signature header structure)
         const parts = signatureHeader.split(',');
         const signatureInfo = {};
         parts.forEach(part => {
@@ -57,26 +81,23 @@ export class SignatureValidationMiddleware implements NestMiddleware {
     }
 
     async fetchPublicKey(keyId: string): Promise<string> {
-        // Fetch the public key using the keyId URL
-        const fetch = (await import('node-fetch')).default;
-        const response = await fetch(keyId);
+
+        const publicKeyUrl = keyId.split('#')[0]; // Strip off the fragment (#main-key)
+        console.log("Fetching public key from:", publicKeyUrl);
+
+        const response = await fetch(publicKeyUrl);
+
         if (!response.ok) {
             throw new BadRequestException('Failed to fetch public key');
         }
-        const data = (await response.json()) as PublicKeyResponse;  // Type assertion for the expected response
+        console.log("response:", response);
+        const data = await response.json() as PublicKeyResponse;
 
-        if (!data.publicKeyPem) {
+        if (!data.publicKey || !data.publicKey.publicKeyPem) {
             throw new BadRequestException('Invalid public key response');
         }
 
-        return data.publicKeyPem;
+        return data.publicKey.publicKeyPem;
     }
 
-    verifySignature(req: Request, headers: string[], signature: string, publicKey: string): boolean {
-        const signingString = headers.map(header => `${header}: ${req.headers[header]}`).join('\n');
-        const verifier = crypto.createVerify('SHA256');
-        verifier.update(signingString);
-        verifier.end();
-        return verifier.verify(publicKey, signature, 'base64');
-    }
 }

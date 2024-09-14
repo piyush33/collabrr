@@ -11,13 +11,9 @@ export declare class ActorController {
         name: string;
         inbox: string;
         outbox: string;
+        liked: string;
         followers: string;
         following: string;
-        publicKey: {
-            id: string;
-            owner: string;
-            publicKeyPem: string;
-        };
         summary: string;
     }>;
     createActor(actorData: Partial<Actor>): Promise<Actor>;
@@ -48,4 +44,10 @@ export declare class ActorController {
     acceptFollowRequest(actorId: number, { followerId }: {
         followerId: number;
     }): Promise<any>;
+    getLiked(username: string): Promise<{
+        '@context': string;
+        type: string;
+        totalItems: number;
+        orderedItems: any[];
+    }>;
 }

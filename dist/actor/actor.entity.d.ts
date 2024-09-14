@@ -5,6 +5,7 @@ export declare class Actor {
     name: string;
     inbox: string;
     outbox: string;
+    liked: string;
     publicKey: string;
     privateKey: string;
     activities: Activity[];

@@ -37,7 +37,7 @@ export class ProfileusersService {
         const savedUser = await this.usersRepository.save(user);
 
         // Step 2: Create Actor for the created ProfileUser
-        const actorData: Partial<Actor> = {
+        const actorData: any = {
             preferredUsername: savedUser?.username,
             name: savedUser?.name,
             inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
@@ -66,7 +66,7 @@ export class ProfileusersService {
         });
 
         // Step 2: Create Actor for the created ProfileUser
-        const actorData: Partial<Actor> = {
+        const actorData: any = {
             preferredUsername: savedUser?.username,
             name: savedUser?.name,
             inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,

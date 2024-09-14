@@ -23,7 +23,7 @@ let WebFingerController = class WebFingerController {
         if (!resource) {
             throw new Error('No resource provided');
         }
-        const match = resource.match(/^acct:(.+)@d3kv9nj5wp3sq6.cloudfront.net$/);
+        const match = resource.match(/^acct:(.+)@88d7-103-167-205-155.ngrok-free.app$/);
         if (!match) {
             throw new Error('Invalid WebFinger resource');
         }
@@ -33,12 +33,12 @@ let WebFingerController = class WebFingerController {
             throw new Error('Actor not found');
         }
         return {
-            subject: `acct:${actor.preferredUsername}@d3kv9nj5wp3sq6.cloudfront.net`,
+            subject: `acct:${actor.preferredUsername}@88d7-103-167-205-155.ngrok-free.app`,
             links: [
                 {
                     rel: 'self',
                     type: 'application/activity+json',
-                    href: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
+                    href: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}`,
                 },
             ],
         };

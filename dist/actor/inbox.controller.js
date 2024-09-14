@@ -27,6 +27,9 @@ let InboxController = class InboxController {
             throw new common_1.NotFoundException('Actor not found');
         }
         console.log(`Received activity for ${username}:`, activity);
+        if (!activity.type) {
+            throw new common_1.BadRequestException('Activity type is required');
+        }
         const result = await this.activityService.createActivity(activity.type, actor.id, activity);
         return {
             '@context': 'https://www.w3.org/ns/activitystreams',

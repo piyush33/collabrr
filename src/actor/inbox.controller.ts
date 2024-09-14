@@ -1,4 +1,4 @@
-import { Controller, Post, Param, Body, Get, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Param, Body, Get, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ActivityService } from '../activity/activity.service';
 import { ActorService } from './actor.service'; // Import actor service to handle actor retrieval
 
@@ -20,6 +20,10 @@ export class InboxController {
 
         // Log the incoming activity for debugging
         console.log(`Received activity for ${username}:`, activity);
+
+        if (!activity.type) {
+            throw new BadRequestException('Activity type is required');
+        }
 
         // Handle activity, store in actor's inbox or process it
         const result = await this.activityService.createActivity(activity.type, actor.id, activity);

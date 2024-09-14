@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, NotFoundException, Query, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, NotFoundException, Query, Patch, Header } from '@nestjs/common';
 import { ActorService } from './actor.service';
 import { Actor } from './actor.entity';
 
@@ -12,6 +12,7 @@ export class ActorController {
      * This is necessary for federation with other ActivityPub-compliant systems.
      */
     @Get(':username')
+    @Header('Content-Type', 'application/ld+json')
     async getActor(@Param('username') username: string) {
         const actor = await this.actorService.findByUsername(username);
 
@@ -22,19 +23,20 @@ export class ActorController {
         // Return a properly formatted ActivityPub Actor object
         return {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
+            id: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}`,
             type: 'Person',
             preferredUsername: actor.preferredUsername,
             name: actor.name,
-            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/inbox`,
-            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/outbox`,
-            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/followers`,
-            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/following`,
-            publicKey: {
-                id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}#main-key`,
-                owner: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
-                publicKeyPem: actor.publicKey
-            },
+            inbox: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/inbox`,
+            outbox: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/outbox`,
+            liked: `https://88d7-103-167-205-155.ngrok-free.app/actors/liked`,
+            followers: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/followers`,
+            following: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/following`,
+            // publicKey: {
+            //     id: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}#main-key`,
+            //     owner: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}`,
+            //     publicKeyPem: actor.publicKey
+            // },
             summary: actor.summary || '',
         };
     }
@@ -127,4 +129,22 @@ export class ActorController {
     ) {
         return this.actorService.acceptFollowRequest(actorId, followerId);
     }
+
+    @Get('liked')
+    async getLiked(@Param('username') username: string) {
+        const actor = await this.actorService.findByUsername(username);
+
+        if (!actor) {
+            throw new NotFoundException('Actor not found');
+        }
+
+        // Return an empty OrderedCollection initially for Liked objects
+        return {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            type: 'OrderedCollection',
+            totalItems: 0,
+            orderedItems: [],
+        };
+    }
+
 }
