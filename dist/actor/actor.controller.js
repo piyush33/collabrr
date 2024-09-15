@@ -25,7 +25,12 @@ let ActorController = class ActorController {
             throw new common_1.NotFoundException('Actor not found');
         }
         return {
-            '@context': "https://www.w3.org/ns/activitystreams",
+            '@context': [
+                "https://www.w3.org/ns/activitystreams",
+                {
+                    "PublicKey": "https://w3id.org/security#PublicKey"
+                }
+            ],
             id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
             type: 'Person',
             preferredUsername: actor.preferredUsername,

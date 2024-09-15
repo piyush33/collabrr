@@ -4,7 +4,9 @@ export declare class ActorController {
     private readonly actorService;
     constructor(actorService: ActorService);
     getActor(username: string): Promise<{
-        '@context': string;
+        '@context': (string | {
+            PublicKey: string;
+        })[];
         id: string;
         type: string;
         preferredUsername: string;
