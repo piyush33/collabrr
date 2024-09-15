@@ -14,7 +14,13 @@ export declare class ActorController {
         liked: string;
         followers: string;
         following: string;
+        publicKey: {
+            id: string;
+            owner: string;
+            publicKeyPem: string;
+        };
         summary: string;
+        icon: string[];
     }>;
     createActor(actorData: Partial<Actor>): Promise<Actor>;
     updateActor(id: number, updateData: Partial<Actor>): Promise<Actor>;

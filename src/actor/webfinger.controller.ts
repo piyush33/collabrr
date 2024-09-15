@@ -11,7 +11,8 @@ export class WebFingerController {
             throw new Error('No resource provided');
         }
 
-        const match = resource.match(/^acct:(.+)@88d7-103-167-205-155.ngrok-free.app$/);
+        // Update the regex to match your CloudFront domain
+        const match = resource.match(/^acct:(.+)@d3kv9nj5wp3sq6.cloudfront.net$/);
         if (!match) {
             throw new Error('Invalid WebFinger resource');
         }
@@ -24,15 +25,14 @@ export class WebFingerController {
         }
 
         return {
-            subject: `acct:${actor.preferredUsername}@88d7-103-167-205-155.ngrok-free.app`,
+            subject: `acct:${actor.preferredUsername}@d3kv9nj5wp3sq6.cloudfront.net`,
             links: [
                 {
                     rel: 'self',
                     type: 'application/activity+json',
-                    href: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}`,  // Use ngrok URL here
+                    href: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
                 },
             ],
         };
     }
-
 }

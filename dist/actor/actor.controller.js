@@ -25,17 +25,25 @@ let ActorController = class ActorController {
             throw new common_1.NotFoundException('Actor not found');
         }
         return {
-            '@context': 'https://www.w3.org/ns/activitystreams',
-            id: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}`,
+            '@context': "https://www.w3.org/ns/activitystreams",
+            id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
             type: 'Person',
             preferredUsername: actor.preferredUsername,
             name: actor.name,
-            inbox: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/inbox`,
-            outbox: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/outbox`,
-            liked: `https://88d7-103-167-205-155.ngrok-free.app/actors/liked`,
-            followers: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/followers`,
-            following: `https://88d7-103-167-205-155.ngrok-free.app/actors/${actor.preferredUsername}/following`,
-            summary: actor.summary || '',
+            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/inbox`,
+            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/outbox`,
+            liked: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/liked`,
+            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/followers`,
+            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}/following`,
+            publicKey: {
+                id: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}#main-key`,
+                owner: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
+                publicKeyPem: actor.publicKey
+            },
+            summary: actor.summary || 'This is a random summary',
+            icon: [
+                "https://opinionthbucket.s3.eu-north-1.amazonaws.com/profile-images/a941beff-7577-42e7-98d3-5f6289d51590-12371158_1164591293570960_1294003296995843062_o.jpg"
+            ]
         };
     }
     async createActor(actorData) {
