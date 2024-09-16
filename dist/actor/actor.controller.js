@@ -117,7 +117,7 @@ let ActorController = class ActorController {
 exports.ActorController = ActorController;
 __decorate([
     (0, common_1.Get)(':username'),
-    (0, common_1.Header)('Content-Type', 'application/ld+json'),
+    (0, common_1.Header)('Content-Type', 'application/ld+json ; profile="https://www.w3.org/ns/activitystreams"'),
     __param(0, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

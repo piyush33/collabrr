@@ -12,7 +12,7 @@ export class ActorController {
      * This is necessary for federation with other ActivityPub-compliant systems.
      */
     @Get(':username')
-    @Header('Content-Type', 'application/ld+json')
+    @Header('Content-Type', 'application/ld+json ; profile="https://www.w3.org/ns/activitystreams"')
     async getActor(@Param('username') username: string) {
         const actor = await this.actorService.findByUsername(username);
 
