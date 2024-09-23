@@ -38,7 +38,7 @@ let WebFingerController = class WebFingerController {
                 {
                     rel: 'self',
                     type: 'application/activity+json',
-                    href: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${actor.preferredUsername}`,
+                    href: `https://social.opinionth.com/actors/${actor.preferredUsername}`,
                 },
             ],
         };
