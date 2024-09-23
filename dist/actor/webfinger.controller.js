@@ -23,7 +23,7 @@ let WebFingerController = class WebFingerController {
         if (!resource) {
             throw new Error('No resource provided');
         }
-        const match = resource.match(/^acct:(.+)@d3kv9nj5wp3sq6.cloudfront.net$/);
+        const match = resource.match(/^acct:(.+)@social.opinionth.com$/);
         if (!match) {
             throw new Error('Invalid WebFinger resource');
         }
@@ -33,7 +33,7 @@ let WebFingerController = class WebFingerController {
             throw new Error('Actor not found');
         }
         return {
-            subject: `acct:${actor.preferredUsername}@d3kv9nj5wp3sq6.cloudfront.net`,
+            subject: `acct:${actor.preferredUsername}@social.opinionth.com`,
             links: [
                 {
                     rel: 'self',

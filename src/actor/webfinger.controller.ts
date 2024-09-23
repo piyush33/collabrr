@@ -12,7 +12,7 @@ export class WebFingerController {
         }
 
         // Update the regex to match your CloudFront domain
-        const match = resource.match(/^acct:(.+)@d3kv9nj5wp3sq6.cloudfront.net$/);
+        const match = resource.match(/^acct:(.+)@social.opinionth.com$/);
         if (!match) {
             throw new Error('Invalid WebFinger resource');
         }
@@ -25,7 +25,7 @@ export class WebFingerController {
         }
 
         return {
-            subject: `acct:${actor.preferredUsername}@d3kv9nj5wp3sq6.cloudfront.net`,
+            subject: `acct:${actor.preferredUsername}@social.opinionth.com`,
             links: [
                 {
                     rel: 'self',
