@@ -26,7 +26,7 @@ export class AuthController {
         return req.user;
     }
 
-    @Get('google')
+    @Post('google')
     @UseGuards(GoogleAuthGuard)
     async googleAuth(@Request() req) { }
 
