@@ -3,12 +3,14 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 import * as bcrypt from 'bcryptjs';
+import { ProfileusersService } from 'src/profileusers/profileusers.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
+        private readonly profileusersService: ProfileusersService,
     ) { }
 
     async validateUser(usernameOrEmail: string, pass: string): Promise<any> {
@@ -19,6 +21,30 @@ export class AuthService {
         }
         return null;
     }
+
+    async validateOAuthUser(profile: any): Promise<any> {
+        let user = await this.usersService.findOneByEmail(profile.email);
+        if (!user) {
+            // Register the user if not found
+            const newUser = new User();
+            newUser.email = profile.email;
+            newUser.name = `${profile.firstName} ${profile.lastName}`;
+            newUser.username = profile.email.split('@')[0];
+
+            const newProfileUser = {
+                email: profile.email,
+                username: profile.email.split('@')[0],
+                name: `${profile.firstName} ${profile.lastName}`,
+
+            };
+
+            await this.profileusersService.create(newProfileUser);
+            user = await this.usersService.create(newUser);
+        }
+        return user;
+
+    }
+
 
     async login(user: any) {
         const payload = { username: user.username, sub: user.id };
