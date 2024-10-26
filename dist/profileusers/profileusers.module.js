@@ -23,7 +23,8 @@ exports.ProfileusersModule = ProfileusersModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([profileuser_entity_1.ProfileUser, profilefeed_item_entity_1.ProfileFeedItem, follower_entity_1.Follower, follower_entity_2.Following]), actor_module_1.ActorModule],
         providers: [profileusers_service_1.ProfileusersService],
-        controllers: [profileusers_controller_1.ProfileusersController]
+        controllers: [profileusers_controller_1.ProfileusersController],
+        exports: [profileusers_service_1.ProfileusersService]
     })
 ], ProfileusersModule);
 //# sourceMappingURL=profileusers.module.js.map

@@ -38,10 +38,12 @@ const jwt_1 = require("@nestjs/jwt");
 const users_service_1 = require("../users/users.service");
 const user_entity_1 = require("../users/user.entity");
 const bcrypt = __importStar(require("bcryptjs"));
+const profileusers_service_1 = require("../profileusers/profileusers.service");
 let AuthService = class AuthService {
-    constructor(usersService, jwtService) {
+    constructor(usersService, jwtService, profileusersService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
+        this.profileusersService = profileusersService;
     }
     async validateUser(usernameOrEmail, pass) {
         const user = await this.usersService.findOneByUsernameOrEmail(usernameOrEmail);
@@ -50,6 +52,23 @@ let AuthService = class AuthService {
             return result;
         }
         return null;
+    }
+    async validateOAuthUser(profile) {
+        let user = await this.usersService.findOneByEmail(profile.email);
+        if (!user) {
+            const newUser = new user_entity_1.User();
+            newUser.email = profile.email;
+            newUser.name = `${profile.firstName} ${profile.lastName}`;
+            newUser.username = profile.email.split('@')[0];
+            const newProfileUser = {
+                email: profile.email,
+                username: profile.email.split('@')[0],
+                name: `${profile.firstName} ${profile.lastName}`,
+            };
+            await this.profileusersService.create(newProfileUser);
+            user = await this.usersService.create(newUser);
+        }
+        return user;
     }
     async login(user) {
         const payload = { username: user.username, sub: user.id };
@@ -71,6 +90,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        profileusers_service_1.ProfileusersService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

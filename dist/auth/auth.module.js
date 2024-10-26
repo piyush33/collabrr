@@ -16,6 +16,8 @@ const jwt_strategy_1 = require("./jwt.strategy");
 const local_strategy_1 = require("./local.strategy");
 const local_auth_guard_1 = require("./local-auth.guard");
 const users_module_1 = require("../users/users.module");
+const google_strategy_1 = require("./google.strategy");
+const profileusers_module_1 = require("../profileusers/profileusers.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -28,9 +30,10 @@ exports.AuthModule = AuthModule = __decorate([
                 secret: process.env.JWT_SECRET || 'secretKey',
                 signOptions: { expiresIn: '1h' },
             }),
+            profileusers_module_1.ProfileusersModule
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, local_strategy_1.LocalStrategy, local_auth_guard_1.LocalAuthGuard],
+        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, local_strategy_1.LocalStrategy, local_auth_guard_1.LocalAuthGuard, google_strategy_1.GoogleStrategy],
         exports: [auth_service_1.AuthService],
     })
 ], AuthModule);

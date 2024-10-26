@@ -8,6 +8,8 @@ import { LocalStrategy } from './local.strategy';
 import { LocalAuthGuard } from './local-auth.guard';
 import { UsersModule } from '../users/users.module';
 import { GoogleStrategy } from './google.strategy';
+import { ProfileusersService } from 'src/profileusers/profileusers.service';
+import { ProfileusersModule } from 'src/profileusers/profileusers.module';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { GoogleStrategy } from './google.strategy';
       secret: process.env.JWT_SECRET || 'secretKey', // Use a secure secret in production
       signOptions: { expiresIn: '1h' },
     }),
+    ProfileusersModule
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy, LocalAuthGuard, GoogleStrategy],

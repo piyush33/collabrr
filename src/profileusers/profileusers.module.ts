@@ -11,6 +11,7 @@ import { ActorModule } from 'src/actor/actor.module';
 @Module({
   imports: [TypeOrmModule.forFeature([ProfileUser, ProfileFeedItem, Follower, Following]), ActorModule],
   providers: [ProfileusersService],
-  controllers: [ProfileusersController]
+  controllers: [ProfileusersController],
+  exports: [ProfileusersService]
 })
 export class ProfileusersModule { }
