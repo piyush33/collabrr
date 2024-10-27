@@ -7,7 +7,6 @@ import { JwtStrategy } from './jwt.strategy';
 import { LocalStrategy } from './local.strategy';
 import { LocalAuthGuard } from './local-auth.guard';
 import { UsersModule } from '../users/users.module';
-import { GoogleStrategy } from './google.strategy';
 import { ProfileusersService } from 'src/profileusers/profileusers.service';
 import { ProfileusersModule } from 'src/profileusers/profileusers.module';
 
@@ -22,7 +21,7 @@ import { ProfileusersModule } from 'src/profileusers/profileusers.module';
     ProfileusersModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy, LocalAuthGuard, GoogleStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy, LocalAuthGuard],
   exports: [AuthService],
 })
 export class AuthModule { }

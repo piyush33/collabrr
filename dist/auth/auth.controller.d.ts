@@ -9,8 +9,7 @@ export declare class AuthController {
     }>;
     signup(createUserDto: Partial<User>): Promise<User>;
     getProfile(req: any): any;
-    googleAuth(req: any): Promise<void>;
-    googleAuthRedirect(req: any): Promise<{
+    googleAuth(token: string): Promise<{
         access_token: string;
         user: any;
     }>;

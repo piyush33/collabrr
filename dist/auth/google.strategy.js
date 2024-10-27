@@ -19,21 +19,10 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
         super({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'https://d3kv9nj5wp3sq6.cloudfront.net/auth/google/callback',
+            callbackURL: 'http://localhost:4000/auth/google/callback',
             scope: ['email', 'profile'],
         });
         this.authService = authService;
-    }
-    async validate(accessToken, refreshToken, profile, done) {
-        const { name, emails } = profile;
-        const user = {
-            email: emails[0].value,
-            firstName: name.givenName,
-            lastName: name.familyName,
-            accessToken
-        };
-        const validatedUser = await this.authService.validateOAuthUser(user);
-        done(null, validatedUser);
     }
 };
 exports.GoogleStrategy = GoogleStrategy;

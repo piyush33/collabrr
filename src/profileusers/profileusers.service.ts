@@ -56,6 +56,7 @@ export class ProfileusersService {
     }
 
     async create(userDto: Partial<ProfileUser>): Promise<ProfileUser> {
+
         const user = this.usersRepository.create(userDto);
         const savedUser = await this.usersRepository.save(user);
 
@@ -64,6 +65,7 @@ export class ProfileusersService {
             publicKeyEncoding: { type: 'spki', format: 'pem' },
             privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
         });
+
 
         // Step 2: Create Actor for the created ProfileUser
         const actorData: any = {
