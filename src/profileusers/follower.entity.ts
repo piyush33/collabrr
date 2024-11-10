@@ -33,7 +33,7 @@ export class Following {
     @Column()
     name: string;
 
-    @Column()
+    @Column({ nullable: true })
     image: string;
 
     @ManyToOne(() => ProfileUser, (user) => user.following, { onDelete: 'CASCADE' })
