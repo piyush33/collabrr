@@ -16,16 +16,23 @@ const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 const profilefeed_item_entity_1 = require("../profilefeed/profilefeed-item.entity");
 const homefeed_entity_1 = require("../homefeed/homefeed.entity");
 const notification_entity_1 = require("../notification/notification.entity");
-const notification_service_1 = require("../notification/notification.service");
+const notification_module_1 = require("../notification/notification.module");
 let LikeModule = class LikeModule {
 };
 exports.LikeModule = LikeModule;
 exports.LikeModule = LikeModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([like_entity_1.Like, profileuser_entity_1.ProfileUser, profilefeed_item_entity_1.ProfileFeedItem, homefeed_entity_1.Homefeed, notification_entity_1.Notification]),
+            typeorm_1.TypeOrmModule.forFeature([
+                like_entity_1.Like,
+                profileuser_entity_1.ProfileUser,
+                profilefeed_item_entity_1.ProfileFeedItem,
+                homefeed_entity_1.Homefeed,
+                notification_entity_1.Notification,
+            ]),
+            notification_module_1.NotificationModule,
         ],
-        providers: [like_service_1.LikeService, notification_service_1.NotificationService],
+        providers: [like_service_1.LikeService],
         controllers: [like_controller_1.LikeController],
     })
 ], LikeModule);

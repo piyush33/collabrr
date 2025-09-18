@@ -17,31 +17,15 @@ const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const profileusers_module_1 = require("./profileusers/profileusers.module");
 const profilefeed_module_1 = require("./profilefeed/profilefeed.module");
-const profileuser_entity_1 = require("./profileusers/profileuser.entity");
-const profilefeed_item_entity_1 = require("./profilefeed/profilefeed-item.entity");
-const homefeed_entity_1 = require("./homefeed/homefeed.entity");
-const user_entity_1 = require("./users/user.entity");
-const follower_entity_1 = require("./profileusers/follower.entity");
 const like_module_1 = require("./like/like.module");
 const repost_module_1 = require("./repost/repost.module");
 const save_module_1 = require("./save/save.module");
-const like_entity_1 = require("./like/like.entity");
-const repost_entity_1 = require("./repost/repost.entity");
-const save_entity_1 = require("./save/save.entity");
-const reply_entity_1 = require("./comment/reply.entity");
-const comment_entity_1 = require("./comment/comment.entity");
 const comment_module_1 = require("./comment/comment.module");
-const user_interaction_entity_1 = require("./homefeed/user-interaction.entity");
 const message_module_1 = require("./message/message.module");
-const message_entity_1 = require("./message/message.entity");
-const conversation_entity_1 = require("./message/conversation.entity");
 const notification_module_1 = require("./notification/notification.module");
-const notification_entity_1 = require("./notification/notification.entity");
 const s3_module_1 = require("./s3/s3.module");
-const actor_module_1 = require("./actor/actor.module");
-const activity_module_1 = require("./activity/activity.module");
-const activity_entity_1 = require("./activity/activity.entity");
-const actor_entity_1 = require("./actor/actor.entity");
+const organization_module_1 = require("./organization/organization.module");
+const invitation_module_1 = require("./invitation/invitation.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -60,8 +44,7 @@ exports.AppModule = AppModule = __decorate([
                     username: configService.get('DB_USERNAME'),
                     password: configService.get('DB_PASSWORD'),
                     database: configService.get('DB_NAME'),
-                    entities: [profileuser_entity_1.ProfileUser, profilefeed_item_entity_1.ProfileFeedItem, homefeed_entity_1.Homefeed, user_entity_1.User, follower_entity_1.Follower, follower_entity_1.Following, like_entity_1.Like, repost_entity_1.Repost, save_entity_1.Save, comment_entity_1.Comment, reply_entity_1.Reply, user_interaction_entity_1.UserInteraction, message_entity_1.Message, conversation_entity_1.Conversation, notification_entity_1.Notification, activity_entity_1.Activity, actor_entity_1.Actor],
-                    autoLoadEntities: false,
+                    autoLoadEntities: true,
                     synchronize: true,
                 }),
                 inject: [config_1.ConfigService],
@@ -78,8 +61,8 @@ exports.AppModule = AppModule = __decorate([
             message_module_1.MessageModule,
             notification_module_1.NotificationModule,
             s3_module_1.S3Module,
-            actor_module_1.ActorModule,
-            activity_module_1.ActivityModule,
+            organization_module_1.OrganizationModule,
+            invitation_module_1.InvitationModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

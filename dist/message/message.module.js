@@ -14,12 +14,22 @@ const message_controller_1 = require("./message.controller");
 const message_entity_1 = require("./message.entity");
 const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 const conversation_entity_1 = require("./conversation.entity");
+const organization_member_entity_1 = require("../organization/organization-member.entity");
+const layer_member_entity_1 = require("../homefeed/layer-member.entity");
 let MessageModule = class MessageModule {
 };
 exports.MessageModule = MessageModule;
 exports.MessageModule = MessageModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([message_entity_1.Message, profileuser_entity_1.ProfileUser, conversation_entity_1.Conversation])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                message_entity_1.Message,
+                profileuser_entity_1.ProfileUser,
+                conversation_entity_1.Conversation,
+                organization_member_entity_1.OrganizationMember,
+                layer_member_entity_1.LayerMember,
+            ]),
+        ],
         providers: [message_service_1.MessageService],
         controllers: [message_controller_1.MessageController],
     })

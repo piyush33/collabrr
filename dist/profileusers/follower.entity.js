@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Following = exports.Follower = void 0;
 const typeorm_1 = require("typeorm");
 const profileuser_entity_1 = require("./profileuser.entity");
+const organization_entity_1 = require("../organization/organization.entity");
 let Follower = class Follower {
 };
 exports.Follower = Follower;
@@ -32,9 +33,15 @@ __decorate([
     __metadata("design:type", String)
 ], Follower.prototype, "image", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.followers, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.followers, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Follower.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, { eager: true }),
+    __metadata("design:type", organization_entity_1.Organization)
+], Follower.prototype, "organization", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Boolean)
@@ -62,9 +69,15 @@ __decorate([
     __metadata("design:type", String)
 ], Following.prototype, "image", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.following, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.following, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Following.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, { eager: true }),
+    __metadata("design:type", organization_entity_1.Organization)
+], Following.prototype, "organization", void 0);
 exports.Following = Following = __decorate([
     (0, typeorm_1.Entity)()
 ], Following);

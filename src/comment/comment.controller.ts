@@ -7,26 +7,28 @@ import { Reply } from './reply.entity';
 
 @Controller('comments')
 export class CommentController {
-    constructor(private readonly commentService: CommentService) { }
+  constructor(private readonly commentService: CommentService) {}
 
-    @Post(':homefeedId')
-    async addComment(
-        @Param('homefeedId') homefeedId: number,
-        @Body() createCommentDto: CreateCommentDto,
-    ): Promise<Comment> {
-        return this.commentService.addComment(homefeedId, createCommentDto);
-    }
+  @Post(':homefeedId')
+  async addComment(
+    @Param('homefeedId') homefeedId: number,
+    @Body() createCommentDto: CreateCommentDto,
+  ): Promise<Comment> {
+    return this.commentService.addComment(homefeedId, createCommentDto);
+  }
 
-    @Post(':commentId/replies')
-    async addReply(
-        @Param('commentId') commentId: number,
-        @Body() createReplyDto: CreateReplyDto,
-    ): Promise<Reply> {
-        return this.commentService.addReply(commentId, createReplyDto);
-    }
+  @Post(':commentId/replies')
+  async addReply(
+    @Param('commentId') commentId: number,
+    @Body() createReplyDto: CreateReplyDto,
+  ): Promise<Reply> {
+    return this.commentService.addReply(commentId, createReplyDto);
+  }
 
-    @Get(':homefeedId')
-    async getComments(@Param('homefeedId') homefeedId: number): Promise<Comment[]> {
-        return this.commentService.getComments(homefeedId);
-    }
+  @Get(':homefeedId')
+  async getComments(
+    @Param('homefeedId') homefeedId: number,
+  ): Promise<Comment[]> {
+    return this.commentService.getComments(homefeedId);
+  }
 }

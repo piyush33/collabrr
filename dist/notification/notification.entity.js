@@ -13,7 +13,11 @@ exports.Notification = void 0;
 const typeorm_1 = require("typeorm");
 const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 const homefeed_entity_1 = require("../homefeed/homefeed.entity");
+const organization_entity_1 = require("../organization/organization.entity");
 let Notification = class Notification {
+    get isRead() {
+        return !!this.readAt;
+    }
 };
 exports.Notification = Notification;
 __decorate([
@@ -25,21 +29,35 @@ __decorate([
     __metadata("design:type", String)
 ], Notification.prototype, "type", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.notifications, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, { eager: true }),
+    __metadata("design:type", organization_entity_1.Organization)
+], Notification.prototype, "organization", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.notifications, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Notification.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (item) => item.notifications, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (item) => item.notifications, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", homefeed_entity_1.Homefeed)
 ], Notification.prototype, "homefeedItem", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.notificationsReceived, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.notificationsReceived, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Notification.prototype, "targetUser", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Notification.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], Notification.prototype, "readAt", void 0);
 exports.Notification = Notification = __decorate([
     (0, typeorm_1.Entity)()
 ], Notification);

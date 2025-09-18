@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HomefeedModule } from "./homefeed/homefeed.module";
+import { HomefeedModule } from './homefeed/homefeed.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileusersModule } from './profileusers/profileusers.module';
@@ -29,11 +29,8 @@ import { Conversation } from './message/conversation.entity';
 import { NotificationModule } from './notification/notification.module';
 import { Notification } from './notification/notification.entity';
 import { S3Module } from './s3/s3.module';
-import { ActorModule } from './actor/actor.module';
-import { ActivityModule } from './activity/activity.module';
-import { Activity } from './activity/activity.entity';
-import { Actor } from './actor/actor.entity';
-
+import { OrganizationModule } from './organization/organization.module';
+import { InvitationModule } from './invitation/invitation.module';
 
 @Module({
   imports: [
@@ -49,8 +46,7 @@ import { Actor } from './actor/actor.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [ProfileUser, ProfileFeedItem, Homefeed, User, Follower, Following, Like, Repost, Save, Comment, Reply, UserInteraction, Message, Conversation, Notification, Activity, Actor],
-        autoLoadEntities: false,
+        autoLoadEntities: true,
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -67,10 +63,10 @@ import { Actor } from './actor/actor.entity';
     MessageModule,
     NotificationModule,
     S3Module,
-    ActorModule,
-    ActivityModule,
+    OrganizationModule,
+    InvitationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

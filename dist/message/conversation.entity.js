@@ -13,6 +13,8 @@ exports.Conversation = void 0;
 const typeorm_1 = require("typeorm");
 const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 const message_entity_1 = require("./message.entity");
+const organization_entity_1 = require("../organization/organization.entity");
+const linked_card_layer_entity_1 = require("../homefeed/linked-card-layer.entity");
 let Conversation = class Conversation {
 };
 exports.Conversation = Conversation;
@@ -21,19 +23,33 @@ __decorate([
     __metadata("design:type", Number)
 ], Conversation.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.conversationsAsUser1, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, { nullable: true, eager: true }),
+    __metadata("design:type", organization_entity_1.Organization)
+], Conversation.prototype, "organization", void 0);
+__decorate([
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.ManyToOne)(() => linked_card_layer_entity_1.LinkedCardLayer, { nullable: true, eager: true }),
+    __metadata("design:type", linked_card_layer_entity_1.LinkedCardLayer)
+], Conversation.prototype, "layer", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (u) => u.conversationsAsUser1, { eager: true }),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Conversation.prototype, "user1", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.conversationsAsUser2, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (u) => u.conversationsAsUser2, { eager: true }),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Conversation.prototype, "user2", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.conversation),
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (m) => m.conversation),
     __metadata("design:type", Array)
 ], Conversation.prototype, "messages", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", Date)
+], Conversation.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamptz', nullable: true }),
     __metadata("design:type", Date)
 ], Conversation.prototype, "lastMessageAt", void 0);
 exports.Conversation = Conversation = __decorate([

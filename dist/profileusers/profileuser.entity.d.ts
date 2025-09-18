@@ -8,6 +8,9 @@ import { UserInteraction } from 'src/homefeed/user-interaction.entity';
 import { Conversation } from 'src/message/conversation.entity';
 import { Message } from 'src/message/message.entity';
 import { Notification } from 'src/notification/notification.entity';
+import { OrganizationMember } from 'src/organization/organization-member.entity';
+import { TeamMember } from 'src/organization/team-member.entity';
+import { LayerMember } from 'src/homefeed/layer-member.entity';
 export declare class ProfileUser {
     id: number;
     name: string;
@@ -15,6 +18,9 @@ export declare class ProfileUser {
     username: string;
     image: string;
     sentMessages: Message[];
+    teamMemberships: TeamMember[];
+    layerMemberships: LayerMember[];
+    orgMemberships: OrganizationMember[];
     conversationsAsUser1: Conversation[];
     conversationsAsUser2: Conversation[];
     followers: Follower[];

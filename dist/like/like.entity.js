@@ -26,11 +26,15 @@ __decorate([
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Like.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profilefeed_item_entity_1.ProfileFeedItem, (feedItem) => feedItem.likes, { cascade: true }),
+    (0, typeorm_1.ManyToOne)(() => profilefeed_item_entity_1.ProfileFeedItem, (feedItem) => feedItem.likes, {
+        cascade: true,
+    }),
     __metadata("design:type", profilefeed_item_entity_1.ProfileFeedItem)
 ], Like.prototype, "feedItem", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (homefeed) => homefeed.likes, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (homefeed) => homefeed.likes, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", homefeed_entity_1.Homefeed)
 ], Like.prototype, "homefeedItem", void 0);
 exports.Like = Like = __decorate([

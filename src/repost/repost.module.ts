@@ -7,13 +7,20 @@ import { ProfileFeedItem } from '../profilefeed/profilefeed-item.entity';
 import { Homefeed } from '../homefeed/homefeed.entity';
 import { Repost } from './repost.entity';
 import { Notification } from 'src/notification/notification.entity';
-import { NotificationService } from 'src/notification/notification.service';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Repost, ProfileUser, ProfileFeedItem, Homefeed, Notification]),
+    TypeOrmModule.forFeature([
+      Repost,
+      ProfileUser,
+      ProfileFeedItem,
+      Homefeed,
+      Notification,
+    ]),
+    NotificationModule,
   ],
-  providers: [RepostService, NotificationService],
-  controllers: [RepostController]
+  providers: [RepostService],
+  controllers: [RepostController],
 })
-export class RepostModule { }
+export class RepostModule {}

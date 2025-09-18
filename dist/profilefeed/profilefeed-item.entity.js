@@ -15,6 +15,15 @@ const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 const like_entity_1 = require("../like/like.entity");
 const repost_entity_1 = require("../repost/repost.entity");
 const save_entity_1 = require("../save/save.entity");
+const organization_entity_1 = require("../organization/organization.entity");
+const team_entity_1 = require("../organization/team.entity");
+var Visibility;
+(function (Visibility) {
+    Visibility["ORG"] = "org";
+    Visibility["LAYER"] = "layer";
+    Visibility["PRIVATE"] = "private";
+    Visibility["TEAM"] = "team";
+})(Visibility || (Visibility = {}));
 let ProfileFeedItem = class ProfileFeedItem {
 };
 exports.ProfileFeedItem = ProfileFeedItem;
@@ -48,8 +57,12 @@ __decorate([
 ], ProfileFeedItem.prototype, "text", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], ProfileFeedItem.prototype, "layerKey", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], ProfileFeedItem.prototype, "parent", void 0);
+], ProfileFeedItem.prototype, "category", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
@@ -62,6 +75,18 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], ProfileFeedItem.prototype, "privacy", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: Visibility, default: Visibility.ORG }),
+    __metadata("design:type", String)
+], ProfileFeedItem.prototype, "visibility", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => team_entity_1.Team, { nullable: true, eager: true }),
+    __metadata("design:type", team_entity_1.Team)
+], ProfileFeedItem.prototype, "team", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, (o) => o.profilePosts, { eager: true }),
+    __metadata("design:type", organization_entity_1.Organization)
+], ProfileFeedItem.prototype, "organization", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.created),
     __metadata("design:type", profileuser_entity_1.ProfileUser)

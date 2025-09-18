@@ -1,62 +1,88 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { ProfileUser } from '../profileusers/profileuser.entity';
 import { Like } from '../like/like.entity';
 import { Repost } from '../repost/repost.entity';
 import { Save } from '../save/save.entity';
+import { Organization } from 'src/organization/organization.entity';
+import { Team } from 'src/organization/team.entity';
 
+enum Visibility {
+  ORG = 'org',
+  LAYER = 'layer',
+  PRIVATE = 'private',
+  TEAM = 'team',
+}
 @Entity()
 export class ProfileFeedItem {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    username: string;
+  @Column()
+  username: string;
 
-    @Column({ nullable: true })
-    title: string;
+  @Column({ nullable: true })
+  title: string;
 
-    @Column({ nullable: true })
-    description: string;
+  @Column({ nullable: true })
+  description: string;
 
-    @Column({ nullable: true })
-    image: string;
+  @Column({ nullable: true })
+  image: string;
 
-    @Column({ nullable: true })
-    picture: string;
+  @Column({ nullable: true })
+  picture: string;
 
-    @Column({ nullable: true })
-    text: string;
+  @Column({ nullable: true })
+  text: string;
 
-    @Column({ nullable: true })
-    parent: string;
+  @Column({ nullable: true })
+  layerKey: number;
 
-    @Column({ nullable: true })
-    weblink: string;
+  @Column({ nullable: true })
+  category: string;
 
-    @Column({ nullable: true })
-    lock: boolean;
+  @Column({ nullable: true })
+  weblink: string;
 
-    @Column({ nullable: true })
-    privacy: boolean;
+  @Column({ nullable: true })
+  lock: boolean;
 
-    @ManyToOne(() => ProfileUser, (user) => user.created)
-    userCreated: ProfileUser;
+  @Column({ nullable: true })
+  privacy: boolean;
 
-    @ManyToOne(() => ProfileUser, (user) => user.reposted)
-    userReposted: ProfileUser;
+  @Column({ type: 'enum', enum: Visibility, default: Visibility.ORG })
+  visibility: Visibility;
 
-    @ManyToOne(() => ProfileUser, (user) => user.liked)
-    userLiked: ProfileUser;
+  @ManyToOne(() => Team, { nullable: true, eager: true })
+  team?: Team;
 
-    @ManyToOne(() => ProfileUser, (user) => user.saved)
-    userSaved: ProfileUser;
+  @ManyToOne(() => Organization, (o) => o.profilePosts, { eager: true })
+  organization: Organization;
 
-    @OneToMany(() => Like, (like) => like.feedItem)
-    likes: Like[];
+  @ManyToOne(() => ProfileUser, (user) => user.created)
+  userCreated: ProfileUser;
 
-    @OneToMany(() => Repost, (repost) => repost.feedItem)
-    reposts: Repost[];
+  @ManyToOne(() => ProfileUser, (user) => user.reposted)
+  userReposted: ProfileUser;
 
-    @OneToMany(() => Save, (save) => save.feedItem)
-    saves: Save[];
+  @ManyToOne(() => ProfileUser, (user) => user.liked)
+  userLiked: ProfileUser;
+
+  @ManyToOne(() => ProfileUser, (user) => user.saved)
+  userSaved: ProfileUser;
+
+  @OneToMany(() => Like, (like) => like.feedItem)
+  likes: Like[];
+
+  @OneToMany(() => Repost, (repost) => repost.feedItem)
+  reposts: Repost[];
+
+  @OneToMany(() => Save, (save) => save.feedItem)
+  saves: Save[];
 }

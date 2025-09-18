@@ -13,6 +13,7 @@ exports.Comment = void 0;
 const typeorm_1 = require("typeorm");
 const homefeed_entity_1 = require("../homefeed/homefeed.entity");
 const reply_entity_1 = require("./reply.entity");
+const organization_entity_1 = require("../organization/organization.entity");
 let Comment = class Comment {
 };
 exports.Comment = Comment;
@@ -32,6 +33,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Comment.prototype, "comment", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, { eager: true }),
+    __metadata("design:type", organization_entity_1.Organization)
+], Comment.prototype, "organization", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => homefeed_entity_1.Homefeed, (homefeed) => homefeed.comments),
     __metadata("design:type", homefeed_entity_1.Homefeed)

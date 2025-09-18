@@ -1,0 +1,40 @@
+import { Repository } from 'typeorm';
+import { Invitation } from './invitation.entity';
+import { Organization } from 'src/organization/organization.entity';
+import { OrganizationMember } from 'src/organization/organization-member.entity';
+import { LinkedCardLayer } from 'src/homefeed/linked-card-layer.entity';
+import { LayerMember } from 'src/homefeed/layer-member.entity';
+import { ProfileUser } from 'src/profileusers/profileuser.entity';
+import { CreateLayerInviteDto, CreateOrgInviteDto } from './invitation.dtos';
+import type { Resend as ResendClient } from 'resend';
+import { ConfigService } from '@nestjs/config';
+export declare class InvitationService {
+    private invRepo;
+    private orgRepo;
+    private orgMemRepo;
+    private layerRepo;
+    private layerMemRepo;
+    private profileRepo;
+    private readonly cfg;
+    private readonly resendClient;
+    constructor(invRepo: Repository<Invitation>, orgRepo: Repository<Organization>, orgMemRepo: Repository<OrganizationMember>, layerRepo: Repository<LinkedCardLayer>, layerMemRepo: Repository<LayerMember>, profileRepo: Repository<ProfileUser>, cfg: ConfigService, resendClient: ResendClient | null);
+    private appOrigin;
+    private emailFrom;
+    private token;
+    private expiry;
+    private assertOrgAdminOrOwner;
+    private assertLayerMemberOrOrgAdmin;
+    private ensureOrgMember;
+    private ensureLayerMember;
+    private sendInviteEmail;
+    createOrgInvite(orgId: number, inviterUserId: number, dto: CreateOrgInviteDto): Promise<Invitation>;
+    createLayerInvite(layerId: number, inviterUserId: number, dto: CreateLayerInviteDto): Promise<Invitation>;
+    listOrgInvites(orgId: number): Promise<Invitation[]>;
+    listLayerInvites(layerId: number): Promise<Invitation[]>;
+    revoke(inviteId: number, requesterUserId: number): Promise<Invitation>;
+    resend(inviteId: number, requesterUserId: number, hours?: number): Promise<Invitation>;
+    previewByToken(token: string): Promise<Invitation>;
+    accept(token: string, acceptorProfileUserId: number): Promise<{
+        ok: boolean;
+    }>;
+}

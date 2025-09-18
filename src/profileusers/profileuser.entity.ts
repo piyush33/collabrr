@@ -9,69 +9,85 @@ import { UserInteraction } from 'src/homefeed/user-interaction.entity';
 import { Conversation } from 'src/message/conversation.entity';
 import { Message } from 'src/message/message.entity';
 import { Notification } from 'src/notification/notification.entity';
+import { OrganizationMember } from 'src/organization/organization-member.entity';
+import { TeamMember } from 'src/organization/team-member.entity';
+import { LayerMember } from 'src/homefeed/layer-member.entity';
 
 @Entity()
 export class ProfileUser {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column({ nullable: true })
-    tagline: string;
+  @Column({ nullable: true })
+  tagline: string;
 
-    @Column({ unique: true })
-    username: string;
+  @Column({ unique: true })
+  username: string;
 
-    @Column({ nullable: true })
-    image: string;
+  @Column({ nullable: true })
+  image: string;
 
-    @OneToMany(() => Message, (message) => message.sender)
-    sentMessages: Message[];
+  @OneToMany(() => Message, (message) => message.sender)
+  sentMessages: Message[];
 
-    @OneToMany(() => Conversation, (conversation) => conversation.user1)
-    conversationsAsUser1: Conversation[];
+  @OneToMany(() => TeamMember, (m) => m.user)
+  teamMemberships: TeamMember[];
 
-    @OneToMany(() => Conversation, (conversation) => conversation.user2)
-    conversationsAsUser2: Conversation[];
+  @OneToMany(() => LayerMember, (m) => m.user)
+  layerMemberships: LayerMember[];
 
-    @OneToMany(() => Follower, (follower) => follower.user, { cascade: true })
-    followers: Follower[];
+  @OneToMany(() => OrganizationMember, (m) => m.user)
+  orgMemberships: OrganizationMember[];
 
-    @OneToMany(() => Following, (following) => following.user, { cascade: true })
-    following: Following[];
+  @OneToMany(() => Conversation, (conversation) => conversation.user1)
+  conversationsAsUser1: Conversation[];
 
-    @OneToMany(() => Homefeed, (item) => item.createdBy, { cascade: true })
-    createdPosts: Homefeed[];
+  @OneToMany(() => Conversation, (conversation) => conversation.user2)
+  conversationsAsUser2: Conversation[];
 
-    @OneToMany(() => ProfileFeedItem, (item) => item.userCreated, { cascade: true })
-    created: ProfileFeedItem[];
+  @OneToMany(() => Follower, (follower) => follower.user, { cascade: true })
+  followers: Follower[];
 
-    @OneToMany(() => ProfileFeedItem, (item) => item.userReposted)
-    reposted: ProfileFeedItem[];
+  @OneToMany(() => Following, (following) => following.user, { cascade: true })
+  following: Following[];
 
-    @OneToMany(() => ProfileFeedItem, (item) => item.userLiked)
-    liked: ProfileFeedItem[];
+  @OneToMany(() => Homefeed, (item) => item.createdBy, { cascade: true })
+  createdPosts: Homefeed[];
 
-    @OneToMany(() => ProfileFeedItem, (item) => item.userSaved)
-    saved: ProfileFeedItem[];
+  @OneToMany(() => ProfileFeedItem, (item) => item.userCreated, {
+    cascade: true,
+  })
+  created: ProfileFeedItem[];
 
-    @OneToMany(() => Like, (like) => like.user, { cascade: true })
-    likes: Like[];
+  @OneToMany(() => ProfileFeedItem, (item) => item.userReposted)
+  reposted: ProfileFeedItem[];
 
-    @OneToMany(() => Repost, (repost) => repost.user, { cascade: true })
-    reposts: Repost[];
+  @OneToMany(() => ProfileFeedItem, (item) => item.userLiked)
+  liked: ProfileFeedItem[];
 
-    @OneToMany(() => Save, (save) => save.user, { cascade: true })
-    saves: Save[];
+  @OneToMany(() => ProfileFeedItem, (item) => item.userSaved)
+  saved: ProfileFeedItem[];
 
-    @OneToMany(() => UserInteraction, (interaction) => interaction.user, { cascade: true })
-    interactions: UserInteraction[];
+  @OneToMany(() => Like, (like) => like.user, { cascade: true })
+  likes: Like[];
 
-    @OneToMany(() => Notification, (notification) => notification.targetUser)
-    notificationsReceived: Notification[];
+  @OneToMany(() => Repost, (repost) => repost.user, { cascade: true })
+  reposts: Repost[];
 
-    @OneToMany(() => Notification, (notification) => notification.user)
-    notifications: Notification[];
+  @OneToMany(() => Save, (save) => save.user, { cascade: true })
+  saves: Save[];
+
+  @OneToMany(() => UserInteraction, (interaction) => interaction.user, {
+    cascade: true,
+  })
+  interactions: UserInteraction[];
+
+  @OneToMany(() => Notification, (notification) => notification.targetUser)
+  notificationsReceived: Notification[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 }

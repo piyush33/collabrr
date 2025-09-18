@@ -19,188 +19,180 @@ const typeorm_2 = require("typeorm");
 const profileuser_entity_1 = require("./profileuser.entity");
 const profilefeed_item_entity_1 = require("../profilefeed/profilefeed-item.entity");
 const follower_entity_1 = require("./follower.entity");
-const actor_service_1 = require("../actor/actor.service");
-const crypto_1 = require("crypto");
+const organization_entity_1 = require("../organization/organization.entity");
+const organization_member_entity_1 = require("../organization/organization-member.entity");
 let ProfileusersService = class ProfileusersService {
-    constructor(usersRepository, profileFeedRepository, followersRepository, followingRepository, actorService) {
+    constructor(usersRepository, profileFeedRepository, followersRepository, followingRepository, orgRepository, orgMemberRepository) {
         this.usersRepository = usersRepository;
         this.profileFeedRepository = profileFeedRepository;
         this.followersRepository = followersRepository;
         this.followingRepository = followingRepository;
-        this.actorService = actorService;
+        this.orgRepository = orgRepository;
+        this.orgMemberRepository = orgMemberRepository;
+        this.toFollowerDto = (row) => ({
+            id: row.id,
+            username: row.username,
+            name: row.name,
+            image: row.image,
+            isFollowing: row.isFollowing,
+        });
+        this.toFollowingDto = (row) => ({
+            id: row.id,
+            username: row.username,
+            name: row.name,
+            image: row.image,
+        });
     }
-    findOne(username) {
-        return this.usersRepository.findOne({ where: { username }, relations: ['created', 'reposted', 'liked', 'saved'] });
-    }
-    async update(username, updateUserDto) {
+    async getUser(username) {
         const user = await this.usersRepository.findOne({ where: { username } });
-        if (!user) {
+        if (!user)
             throw new common_1.NotFoundException('User not found');
-        }
+        return user;
+    }
+    async getOrg(orgId) {
+        const org = await this.orgRepository.findOne({ where: { id: orgId } });
+        if (!org)
+            throw new common_1.NotFoundException('Organization not found');
+        return org;
+    }
+    async assertMember(orgId, userId) {
+        const m = await this.orgMemberRepository.findOne({
+            where: {
+                organization: { id: orgId },
+                user: { id: userId },
+                isActive: true,
+            },
+        });
+        if (!m)
+            throw new common_1.ForbiddenException('User is not a member of this organization');
+    }
+    async findOne(orgId, username) {
+        const user = await this.getUser(username);
+        await this.assertMember(orgId, user.id);
+        return this.usersRepository.findOne({
+            where: { id: user.id },
+            relations: ['created', 'reposted', 'liked', 'saved'],
+        });
+    }
+    async update(orgId, username, updateUserDto) {
+        const user = await this.getUser(username);
+        await this.assertMember(orgId, user.id);
         Object.assign(user, updateUserDto);
         const savedUser = await this.usersRepository.save(user);
-        const actorData = {
-            preferredUsername: savedUser?.username,
-            name: savedUser?.name,
-            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
-            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
-            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
-            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
-            summary: savedUser?.tagline,
-        };
-        const existingActor = await this.actorService.findByUsername(username);
-        if (existingActor) {
-            await this.actorService.updateActor(existingActor.id, actorData);
-        }
         return savedUser;
     }
-    async create(userDto) {
+    async create(arg1, arg2) {
+        const orgId = typeof arg1 === 'number' || arg1 === null ? arg1 : null;
+        const userDto = typeof arg1 === 'object' && arg1 !== null
+            ? arg1
+            : arg2;
+        if (!userDto?.username || !userDto?.name) {
+            throw new common_1.BadRequestException('username and name are required');
+        }
         const user = this.usersRepository.create(userDto);
         const savedUser = await this.usersRepository.save(user);
-        const { publicKey, privateKey } = (0, crypto_1.generateKeyPairSync)('rsa', {
-            modulusLength: 2048,
-            publicKeyEncoding: { type: 'spki', format: 'pem' },
-            privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-        });
-        const actorData = {
-            preferredUsername: savedUser?.username,
-            name: savedUser?.name,
-            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
-            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
-            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
-            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
-            summary: savedUser?.tagline,
-            publicKey: publicKey,
-        };
-        await this.actorService.createActor(actorData);
         return savedUser;
     }
-    async addFollower(username, followerDto) {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        const newFollower = this.followersRepository.create(followerDto);
-        newFollower.user = user;
-        user.followers.push(newFollower);
-        await this.followersRepository.save(newFollower);
-        await this.usersRepository.save(user);
-        return this.toFollowerDto(newFollower);
+    async addFollower(orgId, username, followerDto) {
+        const [org, user] = await Promise.all([
+            this.getOrg(orgId),
+            this.getUser(username),
+        ]);
+        await this.assertMember(orgId, user.id);
+        const row = this.followersRepository.create({ ...followerDto });
+        row.organization = org;
+        row.user = user;
+        await this.followersRepository.save(row);
+        return this.toFollowerDto(row);
     }
-    async addFollowing(username, followingDto) {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['following'],
-        });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        const newFollowing = this.followingRepository.create(followingDto);
-        newFollowing.user = user;
-        user.following.push(newFollowing);
-        await this.followingRepository.save(newFollowing);
-        await this.usersRepository.save(user);
-        return this.toFollowingDto(newFollowing);
+    async addFollowing(orgId, username, followingDto) {
+        const [org, user] = await Promise.all([
+            this.getOrg(orgId),
+            this.getUser(username),
+        ]);
+        await this.assertMember(orgId, user.id);
+        const row = this.followingRepository.create({ ...followingDto });
+        row.organization = org;
+        row.user = user;
+        await this.followingRepository.save(row);
+        return this.toFollowingDto(row);
     }
-    async removeFollowing(username, followingId) {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['following'],
+    async removeFollowing(orgId, username, followingId) {
+        const [org, user] = await Promise.all([
+            this.getOrg(orgId),
+            this.getUser(username),
+        ]);
+        await this.assertMember(orgId, user.id);
+        const following = await this.followingRepository.findOne({
+            where: {
+                id: followingId,
+                user: { id: user.id },
+                organization: { id: org.id },
+            },
         });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        const following = await this.followingRepository.findOne({ where: { id: followingId, user } });
-        if (!following) {
+        if (!following)
             throw new common_1.NotFoundException('Following not found');
-        }
-        const follower = await this.followersRepository.findOne({ where: { username: following.username, user } });
-        if (follower) {
-            follower.isFollowing = false;
-            await this.followersRepository.save(follower);
-            console.log("follower:", follower);
-        }
-        else {
-            console.log("follower not found");
-        }
-        user.following = user.following.filter(follow => follow.id !== followingId);
-        await this.usersRepository.save(user);
-        await this.followingRepository.delete(followingId);
+        await this.followingRepository.delete(following.id);
     }
-    async removeFollower(username, followerId) {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        const follower = await this.followersRepository.findOne({ where: { id: followerId, user } });
-        if (!follower) {
-            throw new common_1.NotFoundException('Follower not found');
-        }
-        user.followers = user.followers.filter(follow => follow.id !== followerId);
-        await this.usersRepository.save(user);
-        await this.followersRepository.delete(followerId);
-    }
-    async getFollowers(username) {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        return user.followers.map(follower => this.toFollowerDto(follower));
-    }
-    async getFollowing(username) {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['following'],
-        });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        console.log("user", user);
-        return user.following.map(following => this.toFollowingDto(following));
-    }
-    async updateFollowerStatus(username, followerId, isFollowing) {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
+    async removeFollower(orgId, username, followerId) {
+        const [org, user] = await Promise.all([
+            this.getOrg(orgId),
+            this.getUser(username),
+        ]);
+        await this.assertMember(orgId, user.id);
         const follower = await this.followersRepository.findOne({
-            where: { id: followerId, user },
+            where: {
+                id: followerId,
+                user: { id: user.id },
+                organization: { id: org.id },
+            },
         });
-        if (!follower) {
+        if (!follower)
             throw new common_1.NotFoundException('Follower not found');
-        }
+        await this.followersRepository.delete(follower.id);
+    }
+    async getFollowers(orgId, username) {
+        const [org, user] = await Promise.all([
+            this.getOrg(orgId),
+            this.getUser(username),
+        ]);
+        await this.assertMember(orgId, user.id);
+        const rows = await this.followersRepository.find({
+            where: { user: { id: user.id }, organization: { id: org.id } },
+            order: { id: 'DESC' },
+        });
+        return rows.map(this.toFollowerDto);
+    }
+    async getFollowing(orgId, username) {
+        const [org, user] = await Promise.all([
+            this.getOrg(orgId),
+            this.getUser(username),
+        ]);
+        await this.assertMember(orgId, user.id);
+        const rows = await this.followingRepository.find({
+            where: { user: { id: user.id }, organization: { id: org.id } },
+            order: { id: 'DESC' },
+        });
+        return rows.map(this.toFollowingDto);
+    }
+    async updateFollowerStatus(orgId, username, followerId, isFollowing) {
+        const [org, user] = await Promise.all([
+            this.getOrg(orgId),
+            this.getUser(username),
+        ]);
+        await this.assertMember(orgId, user.id);
+        const follower = await this.followersRepository.findOne({
+            where: {
+                id: followerId,
+                user: { id: user.id },
+                organization: { id: org.id },
+            },
+        });
+        if (!follower)
+            throw new common_1.NotFoundException('Follower not found');
         follower.isFollowing = isFollowing;
-        const updatedFollower = await this.followersRepository.save(follower);
-        return this.toFollowerDto(updatedFollower);
-    }
-    toFollowerDto(feedItem) {
-        return {
-            id: feedItem.id,
-            username: feedItem.username,
-            name: feedItem.name,
-            image: feedItem.image,
-            isFollowing: feedItem.isFollowing,
-        };
-    }
-    toFollowingDto(feedItem) {
-        return {
-            id: feedItem.id,
-            username: feedItem.username,
-            name: feedItem.name,
-            image: feedItem.image,
-        };
+        const updated = await this.followersRepository.save(follower);
+        return this.toFollowerDto(updated);
     }
 };
 exports.ProfileusersService = ProfileusersService;
@@ -210,10 +202,13 @@ exports.ProfileusersService = ProfileusersService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(profilefeed_item_entity_1.ProfileFeedItem)),
     __param(2, (0, typeorm_1.InjectRepository)(follower_entity_1.Follower)),
     __param(3, (0, typeorm_1.InjectRepository)(follower_entity_1.Following)),
+    __param(4, (0, typeorm_1.InjectRepository)(organization_entity_1.Organization)),
+    __param(5, (0, typeorm_1.InjectRepository)(organization_member_entity_1.OrganizationMember)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        actor_service_1.ActorService])
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], ProfileusersService);
 //# sourceMappingURL=profileusers.service.js.map

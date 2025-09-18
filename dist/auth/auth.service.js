@@ -31,6 +31,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -39,15 +42,38 @@ const users_service_1 = require("../users/users.service");
 const user_entity_1 = require("../users/user.entity");
 const bcrypt = __importStar(require("bcryptjs"));
 const profileusers_service_1 = require("../profileusers/profileusers.service");
+const typeorm_1 = require("typeorm");
+const typeorm_2 = require("@nestjs/typeorm");
+const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 let AuthService = class AuthService {
-    constructor(usersService, jwtService, profileusersService) {
+    constructor(usersService, jwtService, profileusersService, profileRepo) {
         this.usersService = usersService;
         this.jwtService = jwtService;
         this.profileusersService = profileusersService;
+        this.profileRepo = profileRepo;
+    }
+    async ensureProfileUser(name, username, email) {
+        let profile = await this.profileRepo.findOne({ where: { username } });
+        if (!profile) {
+            profile = await this.profileusersService.create({
+                name: name ?? username,
+                username,
+            });
+        }
+        return profile;
+    }
+    async uniqueUsername(base) {
+        let candidate = base.toLowerCase();
+        let i = 0;
+        while (await this.usersService.findOneByUsername(candidate)) {
+            i += 1;
+            candidate = `${base.toLowerCase()}${i}`;
+        }
+        return candidate;
     }
     async validateUser(usernameOrEmail, pass) {
         const user = await this.usersService.findOneByUsernameOrEmail(usernameOrEmail);
-        if (user && await bcrypt.compare(pass, user.password)) {
+        if (user && user.password && (await bcrypt.compare(pass, user.password))) {
             const { password, ...result } = user;
             return result;
         }
@@ -56,41 +82,59 @@ let AuthService = class AuthService {
     async validateOAuthUser(profile) {
         let user = await this.usersService.findOneByEmail(profile.email);
         if (!user) {
+            const base = profile.email.split('@')[0];
+            const username = await this.uniqueUsername(base);
             const newUser = new user_entity_1.User();
             newUser.email = profile.email;
-            newUser.name = `${profile.firstName} ${profile.lastName}`;
-            newUser.username = profile.email.split('@')[0];
-            const newProfileUser = {
-                email: profile.email,
-                username: profile.email.split('@')[0],
-                name: `${profile.firstName} ${profile.lastName}`,
-            };
-            await this.profileusersService.create(newProfileUser);
+            newUser.name =
+                [profile.firstName, profile.lastName].filter(Boolean).join(' ') ||
+                    username;
+            newUser.username = username;
             user = await this.usersService.create(newUser);
         }
+        await this.ensureProfileUser(user.name, user.username, user.email);
         return user;
     }
     async login(user) {
-        const payload = { username: user.username, sub: user.id };
+        const profile = await this.profileRepo.findOne({
+            where: { username: user.username },
+        });
+        const payload = {
+            sub: user.id,
+            username: user.username,
+            email: user.email,
+            profileUserId: profile?.id,
+        };
         return {
             access_token: this.jwtService.sign(payload),
             user,
+            profileUser: profile ?? null,
         };
     }
     async register(userDto) {
+        if (await this.usersService.findOneByEmail(userDto.email)) {
+            throw new common_1.ConflictException('Email already in use');
+        }
+        if (await this.usersService.findOneByUsername(userDto.username)) {
+            throw new common_1.ConflictException('Username already in use');
+        }
         const user = new user_entity_1.User();
         user.name = userDto.name;
         user.username = userDto.username;
         user.email = userDto.email;
         user.password = await bcrypt.hash(userDto.password, 10);
-        return this.usersService.create(user);
+        const created = await this.usersService.create(user);
+        await this.ensureProfileUser(created.name, created.username, created.email);
+        return created;
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
+    __param(3, (0, typeorm_2.InjectRepository)(profileuser_entity_1.ProfileUser)),
     __metadata("design:paramtypes", [users_service_1.UsersService,
         jwt_1.JwtService,
-        profileusers_service_1.ProfileusersService])
+        profileusers_service_1.ProfileusersService,
+        typeorm_1.Repository])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

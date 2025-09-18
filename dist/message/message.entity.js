@@ -21,11 +21,15 @@ __decorate([
     __metadata("design:type", Number)
 ], Message.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.sentMessages, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => profileuser_entity_1.ProfileUser, (user) => user.sentMessages, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", profileuser_entity_1.ProfileUser)
 ], Message.prototype, "sender", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => conversation_entity_1.Conversation, (conversation) => conversation.messages, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => conversation_entity_1.Conversation, (conversation) => conversation.messages, {
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", conversation_entity_1.Conversation)
 ], Message.prototype, "conversation", void 0);
 __decorate([

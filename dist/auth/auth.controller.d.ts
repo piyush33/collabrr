@@ -5,12 +5,14 @@ export declare class AuthController {
     constructor(authService: AuthService);
     login(req: any): Promise<{
         access_token: string;
-        user: any;
+        user: User;
+        profileUser: import("../profileusers/profileuser.entity").ProfileUser;
     }>;
     signup(createUserDto: Partial<User>): Promise<User>;
     getProfile(req: any): any;
     googleAuth(token: string): Promise<{
         access_token: string;
-        user: any;
+        user: User;
+        profileUser: import("../profileusers/profileuser.entity").ProfileUser;
     }>;
 }

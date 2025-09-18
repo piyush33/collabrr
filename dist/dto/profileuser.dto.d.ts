@@ -4,7 +4,7 @@ export declare class FollowerDto {
     username: string;
     name: string;
     image: string;
-    isFollowing: Boolean;
+    isFollowing: boolean;
 }
 export declare class FollowingDto {
     id: number;

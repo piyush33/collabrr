@@ -1,276 +1,271 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+// src/profileusers/profileusers.service.ts
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProfileUser } from './profileuser.entity';
 import { ProfileFeedItem } from '../profilefeed/profilefeed-item.entity';
 import { Follower, Following } from './follower.entity';
 import { FollowerDto, FollowingDto } from 'src/dto/profileuser.dto';
-import { ActorService } from 'src/actor/actor.service';
-import { Actor } from 'src/actor/actor.entity';
-import { generateKeyPairSync } from 'crypto';
-
+import { Organization } from 'src/organization/organization.entity';
+import { OrganizationMember } from 'src/organization/organization-member.entity';
 
 @Injectable()
 export class ProfileusersService {
-    constructor(
-        @InjectRepository(ProfileUser)
-        private usersRepository: Repository<ProfileUser>,
-        @InjectRepository(ProfileFeedItem)
-        private profileFeedRepository: Repository<ProfileFeedItem>,
-        @InjectRepository(Follower)
-        private followersRepository: Repository<Follower>,
-        @InjectRepository(Following)
-        private followingRepository: Repository<Following>,
-        private readonly actorService: ActorService,
-    ) { }
+  constructor(
+    @InjectRepository(ProfileUser)
+    private usersRepository: Repository<ProfileUser>,
+    @InjectRepository(ProfileFeedItem)
+    private profileFeedRepository: Repository<ProfileFeedItem>,
+    @InjectRepository(Follower)
+    private followersRepository: Repository<Follower>,
+    @InjectRepository(Following)
+    private followingRepository: Repository<Following>,
+    @InjectRepository(Organization)
+    private orgRepository: Repository<Organization>,
+    @InjectRepository(OrganizationMember)
+    private orgMemberRepository: Repository<OrganizationMember>,
+  ) {}
 
-    findOne(username: string): Promise<ProfileUser> {
-        return this.usersRepository.findOne({ where: { username }, relations: ['created', 'reposted', 'liked', 'saved'] });
+  // ---------- helpers ----------
+  private async getUser(username: string) {
+    const user = await this.usersRepository.findOne({ where: { username } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+  private async getOrg(orgId: number) {
+    const org = await this.orgRepository.findOne({ where: { id: orgId } });
+    if (!org) throw new NotFoundException('Organization not found');
+    return org;
+  }
+  private async assertMember(orgId: number, userId: number) {
+    const m = await this.orgMemberRepository.findOne({
+      where: {
+        organization: { id: orgId },
+        user: { id: userId },
+        isActive: true,
+      },
+    });
+    if (!m)
+      throw new ForbiddenException('User is not a member of this organization');
+  }
+
+  // ---------- profile ----------
+  async findOne(orgId: number, username: string): Promise<ProfileUser> {
+    const user = await this.getUser(username);
+    // Optional: only expose profile if the subject is in this org.
+    await this.assertMember(orgId, user.id);
+
+    // You can choose which relations to expose; below is light.
+    return this.usersRepository.findOne({
+      where: { id: user.id },
+      relations: ['created', 'reposted', 'liked', 'saved'],
+    });
+  }
+
+  async update(
+    orgId: number,
+    username: string,
+    updateUserDto: Partial<ProfileUser>,
+  ): Promise<ProfileUser> {
+    const user = await this.getUser(username);
+    await this.assertMember(orgId, user.id);
+
+    Object.assign(user, updateUserDto);
+    const savedUser = await this.usersRepository.save(user);
+
+    return savedUser;
+  }
+
+  // Overloads
+  async create(userDto: Partial<ProfileUser>): Promise<ProfileUser>;
+  async create(
+    orgId: number | null,
+    userDto: Partial<ProfileUser>,
+  ): Promise<ProfileUser>;
+
+  // Impl
+  async create(
+    arg1: number | Partial<ProfileUser> | null,
+    arg2?: Partial<ProfileUser>,
+  ): Promise<ProfileUser> {
+    // Resolve parameters
+    const orgId = typeof arg1 === 'number' || arg1 === null ? arg1 : null;
+    const userDto: Partial<ProfileUser> =
+      typeof arg1 === 'object' && arg1 !== null
+        ? arg1
+        : (arg2 as Partial<ProfileUser>);
+
+    if (!userDto?.username || !userDto?.name) {
+      throw new BadRequestException('username and name are required');
     }
 
-    async update(username: string, updateUserDto: Partial<ProfileUser>): Promise<ProfileUser> {
-        const user = await this.usersRepository.findOne({ where: { username } });
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-        Object.assign(user, updateUserDto);
-        const savedUser = await this.usersRepository.save(user);
+    // your existing logic
+    const user = this.usersRepository.create(userDto);
+    const savedUser = await this.usersRepository.save(user);
 
-        // Step 2: Create Actor for the created ProfileUser
-        const actorData: any = {
-            preferredUsername: savedUser?.username,
-            name: savedUser?.name,
-            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
-            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
-            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
-            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
-            summary: savedUser?.tagline, // Use the bio of the ProfileUser for the Actor summary
-        };
+    // Optionally use orgId later if you want auto-join behavior
+    // if (orgId) { ... }
 
-        const existingActor = await this.actorService.findByUsername(username);
-        if (existingActor) {
-            await this.actorService.updateActor(existingActor.id, actorData);
-        }
+    return savedUser;
+  }
 
-        return savedUser;
-    }
+  // ---------- followers ----------
+  async addFollower(
+    orgId: number,
+    username: string,
+    followerDto: FollowerDto,
+  ): Promise<FollowerDto> {
+    const [org, user] = await Promise.all([
+      this.getOrg(orgId),
+      this.getUser(username),
+    ]);
+    await this.assertMember(orgId, user.id);
 
-    async create(userDto: Partial<ProfileUser>): Promise<ProfileUser> {
+    const row = this.followersRepository.create({ ...followerDto });
+    (row as any).organization = org; // requires org field on Follower
+    row.user = user;
 
-        const user = this.usersRepository.create(userDto);
-        const savedUser = await this.usersRepository.save(user);
+    await this.followersRepository.save(row);
+    return this.toFollowerDto(row);
+  }
 
-        const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-            modulusLength: 2048,
-            publicKeyEncoding: { type: 'spki', format: 'pem' },
-            privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-        });
+  async addFollowing(
+    orgId: number,
+    username: string,
+    followingDto: FollowingDto,
+  ): Promise<FollowingDto> {
+    const [org, user] = await Promise.all([
+      this.getOrg(orgId),
+      this.getUser(username),
+    ]);
+    await this.assertMember(orgId, user.id);
 
+    const row = this.followingRepository.create({ ...followingDto });
+    (row as any).organization = org; // requires org field on Following
+    row.user = user;
 
-        // Step 2: Create Actor for the created ProfileUser
-        const actorData: any = {
-            preferredUsername: savedUser?.username,
-            name: savedUser?.name,
-            inbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/inbox`,
-            outbox: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/outbox`,
-            followers: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/followers`,
-            following: `https://d3kv9nj5wp3sq6.cloudfront.net/actors/${savedUser?.username}/following`,
-            summary: savedUser?.tagline, // Use the bio of the ProfileUser for the Actor summary
-            publicKey: publicKey,
-        };
+    await this.followingRepository.save(row);
+    return this.toFollowingDto(row);
+  }
 
-        await this.actorService.createActor(actorData); // Call ActorService to create an Actor
+  async removeFollowing(
+    orgId: number,
+    username: string,
+    followingId: number,
+  ): Promise<void> {
+    const [org, user] = await Promise.all([
+      this.getOrg(orgId),
+      this.getUser(username),
+    ]);
+    await this.assertMember(orgId, user.id);
 
-        return savedUser;
-    }
+    const following = await this.followingRepository.findOne({
+      where: {
+        id: followingId,
+        user: { id: user.id },
+        organization: { id: org.id } as any,
+      },
+    });
+    if (!following) throw new NotFoundException('Following not found');
 
-    async addFollower(username: string, followerDto: FollowerDto): Promise<FollowerDto> {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
+    await this.followingRepository.delete(following.id);
+  }
 
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
+  async removeFollower(
+    orgId: number,
+    username: string,
+    followerId: number,
+  ): Promise<void> {
+    const [org, user] = await Promise.all([
+      this.getOrg(orgId),
+      this.getUser(username),
+    ]);
+    await this.assertMember(orgId, user.id);
 
-        const newFollower = this.followersRepository.create(followerDto);
-        newFollower.user = user;
+    const follower = await this.followersRepository.findOne({
+      where: {
+        id: followerId,
+        user: { id: user.id },
+        organization: { id: org.id } as any,
+      },
+    });
+    if (!follower) throw new NotFoundException('Follower not found');
 
-        user.followers.push(newFollower);
+    await this.followersRepository.delete(follower.id);
+  }
 
-        await this.followersRepository.save(newFollower);
-        await this.usersRepository.save(user);
+  async getFollowers(orgId: number, username: string): Promise<FollowerDto[]> {
+    const [org, user] = await Promise.all([
+      this.getOrg(orgId),
+      this.getUser(username),
+    ]);
+    await this.assertMember(orgId, user.id);
 
-        return this.toFollowerDto(newFollower);
-    }
+    const rows = await this.followersRepository.find({
+      where: { user: { id: user.id }, organization: { id: org.id } as any },
+      order: { id: 'DESC' },
+    });
+    return rows.map(this.toFollowerDto);
+  }
 
+  async getFollowing(orgId: number, username: string): Promise<FollowingDto[]> {
+    const [org, user] = await Promise.all([
+      this.getOrg(orgId),
+      this.getUser(username),
+    ]);
+    await this.assertMember(orgId, user.id);
 
-    async addFollowing(username: string, followingDto: FollowingDto): Promise<FollowingDto> {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['following'],
-        });
+    const rows = await this.followingRepository.find({
+      where: { user: { id: user.id }, organization: { id: org.id } as any },
+      order: { id: 'DESC' },
+    });
+    return rows.map(this.toFollowingDto);
+  }
 
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
+  async updateFollowerStatus(
+    orgId: number,
+    username: string,
+    followerId: number,
+    isFollowing: boolean,
+  ): Promise<FollowerDto> {
+    const [org, user] = await Promise.all([
+      this.getOrg(orgId),
+      this.getUser(username),
+    ]);
+    await this.assertMember(orgId, user.id);
 
-        const newFollowing = this.followingRepository.create(followingDto);
-        newFollowing.user = user;
+    const follower = await this.followersRepository.findOne({
+      where: {
+        id: followerId,
+        user: { id: user.id },
+        organization: { id: org.id } as any,
+      },
+    });
+    if (!follower) throw new NotFoundException('Follower not found');
 
-        user.following.push(newFollowing);
+    follower.isFollowing = isFollowing;
+    const updated = await this.followersRepository.save(follower);
+    return this.toFollowerDto(updated);
+  }
 
-        await this.followingRepository.save(newFollowing);
-        await this.usersRepository.save(user);
+  // ---------- mapping ----------
+  private toFollowerDto = (row: Follower): FollowerDto => ({
+    id: row.id,
+    username: row.username,
+    name: row.name,
+    image: row.image,
+    isFollowing: row.isFollowing,
+  });
 
-        return this.toFollowingDto(newFollowing);
-    }
-
-    async removeFollowing(username: string, followingId: number): Promise<void> {
-        // Find the user and load their 'following' relationship
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['following'],
-        });
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
-        // Find the specific 'Following' entry to be removed
-        const following = await this.followingRepository.findOne({ where: { id: followingId, user } });
-        if (!following) {
-            throw new NotFoundException('Following not found');
-        }
-
-        // Update the corresponding Follower's isFollowing to false
-        const follower = await this.followersRepository.findOne({ where: { username: following.username, user } });
-        if (follower) {
-            follower.isFollowing = false;
-            await this.followersRepository.save(follower);
-            console.log("follower:", follower);
-
-        }
-        else {
-            console.log("follower not found");
-        }
-
-        // Remove the following from the user's 'following' array
-        user.following = user.following.filter(follow => follow.id !== followingId);
-
-        // Save the updated user to ensure the removal of the relationship
-        await this.usersRepository.save(user);
-
-        // Delete the 'Following' entry from the database
-        await this.followingRepository.delete(followingId);
-    }
-
-    async removeFollower(username: string, followerId: number): Promise<void> {
-        // Find the user and load their 'followers' relationship
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
-
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
-        // Find the specific 'Follower' entry to be removed
-        const follower = await this.followersRepository.findOne({ where: { id: followerId, user } });
-        if (!follower) {
-            throw new NotFoundException('Follower not found');
-        }
-
-        // Remove the follower from the user's 'followers' array
-        user.followers = user.followers.filter(follow => follow.id !== followerId);
-
-        // Save the updated user to ensure the removal of the relationship
-        await this.usersRepository.save(user);
-
-        // Delete the 'Follower' entry from the database
-        await this.followersRepository.delete(followerId);
-    }
-
-
-    async getFollowers(username: string): Promise<FollowerDto[]> {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
-        return user.followers.map(follower => this.toFollowerDto(follower));
-    }
-
-    async getFollowing(username: string): Promise<FollowingDto[]> {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['following'],
-        });
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-        console.log("user", user);
-
-        return user.following.map(following => this.toFollowingDto(following));
-    }
-
-    async updateFollowerStatus(username: string, followerId: number, isFollowing: boolean): Promise<FollowerDto> {
-        const user = await this.usersRepository.findOne({
-            where: { username },
-            relations: ['followers'],
-        });
-
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
-        const follower = await this.followersRepository.findOne({
-            where: { id: followerId, user },
-        });
-
-        if (!follower) {
-            throw new NotFoundException('Follower not found');
-        }
-
-        follower.isFollowing = isFollowing;
-        const updatedFollower = await this.followersRepository.save(follower);
-
-        return this.toFollowerDto(updatedFollower);
-    }
-
-
-    private toFollowerDto(feedItem: Follower): FollowerDto {
-        return {
-            id: feedItem.id,
-            username: feedItem.username,
-            name: feedItem.name,
-            image: feedItem.image,
-            isFollowing: feedItem.isFollowing,
-        };
-    }
-
-    private toFollowingDto(feedItem: Following): FollowingDto {
-        return {
-            id: feedItem.id,
-            username: feedItem.username,
-            name: feedItem.name,
-            image: feedItem.image,
-        };
-    }
-
-    // async addProfileFeedItem(username: string, feedItemData: Partial<ProfileFeedItem>, feedType: string): Promise<ProfileFeedItem> {
-    //     const user = await this.findOne(username);
-    //     if (!user) {
-    //         throw new NotFoundException('User not found');
-    //     }
-    //     const feedItem = this.profileFeedRepository.create(feedItemData);
-    //     feedItem.user = user;
-    //     user[feedType].push(feedItem);
-    //     await this.usersRepository.save(user);
-    //     return this.profileFeedRepository.save(feedItem);
-    // }
+  private toFollowingDto = (row: Following): FollowingDto => ({
+    id: row.id,
+    username: row.username,
+    name: row.name,
+    image: row.image,
+  });
 }

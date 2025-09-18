@@ -1,24 +1,42 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { ProfileUser } from '../profileusers/profileuser.entity';
 import { Homefeed } from '../homefeed/homefeed.entity';
+import { Organization } from 'src/organization/organization.entity';
 
 @Entity()
 export class Notification {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    type: string; // "liked" or "reposted"
+  @Column()
+  type: string; // "liked" or "reposted"
 
-    @ManyToOne(() => ProfileUser, (user) => user.notifications, { onDelete: 'CASCADE' })
-    user: ProfileUser; // The user who performed the action (liked or reposted)
+  @ManyToOne(() => Organization, { eager: true })
+  organization: Organization;
 
-    @ManyToOne(() => Homefeed, (item) => item.notifications, { onDelete: 'CASCADE' })
-    homefeedItem: Homefeed; // The item that was liked or reposted
+  @ManyToOne(() => ProfileUser, (user) => user.notifications, {
+    onDelete: 'CASCADE',
+  })
+  user: ProfileUser; // The user who performed the action (liked or reposted)
 
-    @ManyToOne(() => ProfileUser, (user) => user.notificationsReceived, { onDelete: 'CASCADE' })
-    targetUser: ProfileUser; // The main user who receives the notification
+  @ManyToOne(() => Homefeed, (item) => item.notifications, {
+    onDelete: 'CASCADE',
+  })
+  homefeedItem: Homefeed; // The item that was liked or reposted
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: Date;
+  @ManyToOne(() => ProfileUser, (user) => user.notificationsReceived, {
+    onDelete: 'CASCADE',
+  })
+  targetUser: ProfileUser; // The main user who receives the notification
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  readAt: Date | null;
+
+  // convenience getter (optional)
+  get isRead(): boolean {
+    return !!this.readAt;
+  }
 }

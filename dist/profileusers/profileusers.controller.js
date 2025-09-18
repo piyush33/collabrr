@@ -20,117 +20,127 @@ let ProfileusersController = class ProfileusersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
-    findOne(username) {
-        return this.usersService.findOne(username);
+    findOne(orgId, username) {
+        return this.usersService.findOne(orgId, username);
     }
-    create(createUserDto) {
-        return this.usersService.create(createUserDto);
+    create(orgId, createUserDto) {
+        return this.usersService.create(orgId, createUserDto);
     }
-    update(username, updateUserDto) {
-        return this.usersService.update(username, updateUserDto);
+    update(orgId, username, updateUserDto) {
+        return this.usersService.update(orgId, username, updateUserDto);
     }
-    async addFollower(username, followerDto) {
-        return this.usersService.addFollower(username, followerDto);
+    async addFollower(orgId, username, followerDto) {
+        return this.usersService.addFollower(orgId, username, followerDto);
     }
-    async addFollowing(username, followingDto) {
-        return this.usersService.addFollowing(username, followingDto);
+    async addFollowing(orgId, username, followingDto) {
+        return this.usersService.addFollowing(orgId, username, followingDto);
     }
-    async getFollowers(username) {
-        return this.usersService.getFollowers(username);
+    async getFollowers(orgId, username) {
+        return this.usersService.getFollowers(orgId, username);
     }
-    async getFollowing(username) {
-        return this.usersService.getFollowing(username);
+    async getFollowing(orgId, username) {
+        return this.usersService.getFollowing(orgId, username);
     }
-    async removeFollowing(username, followingId) {
-        return this.usersService.removeFollowing(username, followingId);
+    async removeFollowing(orgId, username, followingId) {
+        return this.usersService.removeFollowing(orgId, username, followingId);
     }
-    async removeFollower(username, followerId) {
-        return this.usersService.removeFollower(username, followerId);
+    async removeFollower(orgId, username, followerId) {
+        return this.usersService.removeFollower(orgId, username, followerId);
     }
-    async updateFollowerStatus(username, followerId, isFollowing) {
-        return this.usersService.updateFollowerStatus(username, followerId, isFollowing);
+    async updateFollowerStatus(orgId, username, followerId, isFollowing) {
+        return this.usersService.updateFollowerStatus(orgId, username, followerId, isFollowing);
     }
 };
 exports.ProfileusersController = ProfileusersController;
 __decorate([
     (0, common_1.Get)(':username'),
-    __param(0, (0, common_1.Param)('username')),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "create", null);
 __decorate([
     (0, common_1.Put)(':username'),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Number, String, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "update", null);
 __decorate([
     (0, common_1.Post)(':username/followers'),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, profileuser_dto_1.FollowerDto]),
+    __metadata("design:paramtypes", [Number, String, profileuser_dto_1.FollowerDto]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "addFollower", null);
 __decorate([
     (0, common_1.Post)(':username/following'),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, profileuser_dto_1.FollowingDto]),
+    __metadata("design:paramtypes", [Number, String, profileuser_dto_1.FollowingDto]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "addFollowing", null);
 __decorate([
     (0, common_1.Get)(':username/followers'),
-    __param(0, (0, common_1.Param)('username')),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "getFollowers", null);
 __decorate([
     (0, common_1.Get)(':username/following'),
-    __param(0, (0, common_1.Param)('username')),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "getFollowing", null);
 __decorate([
     (0, common_1.Delete)(':username/following/:followingId'),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Param)('followingId')),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Param)('followingId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:paramtypes", [Number, String, Number]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "removeFollowing", null);
 __decorate([
     (0, common_1.Delete)(':username/followers/:followerId'),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Param)('followerId')),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Param)('followerId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:paramtypes", [Number, String, Number]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "removeFollower", null);
 __decorate([
     (0, common_1.Patch)(':username/followers/:followerId'),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Param)('followerId')),
-    __param(2, (0, common_1.Body)('isFollowing')),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Param)('followerId', common_1.ParseIntPipe)),
+    __param(3, (0, common_1.Body)('isFollowing')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, Boolean]),
+    __metadata("design:paramtypes", [Number, String, Number, Boolean]),
     __metadata("design:returntype", Promise)
 ], ProfileusersController.prototype, "updateFollowerStatus", null);
 exports.ProfileusersController = ProfileusersController = __decorate([
-    (0, common_1.Controller)('profileusers'),
+    (0, common_1.Controller)('orgs/:orgId/profileusers'),
     __metadata("design:paramtypes", [profileusers_service_1.ProfileusersService])
 ], ProfileusersController);
 //# sourceMappingURL=profileusers.controller.js.map

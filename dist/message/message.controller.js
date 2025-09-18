@@ -19,43 +19,82 @@ let MessageController = class MessageController {
     constructor(messageService) {
         this.messageService = messageService;
     }
-    async sendMessage(senderUsername, recipientUsername, content) {
-        return this.messageService.sendMessage(senderUsername, recipientUsername, content);
+    sendOrgMessage(orgId, senderUsername, recipientUsername, content) {
+        return this.messageService.sendOrgMessage(orgId, senderUsername, recipientUsername, content);
     }
-    async getConversationHistory(user1Username, user2Username) {
-        return this.messageService.getConversationHistory(user1Username, user2Username);
+    getOrgConversationHistory(orgId, user1Username, user2Username) {
+        return this.messageService.getOrgConversationHistory(orgId, user1Username, user2Username);
     }
-    async getRecentConversations(username) {
-        return this.messageService.getRecentConversations(username);
+    getOrgRecentConversations(orgId, username) {
+        return this.messageService.getOrgRecentConversations(orgId, username);
+    }
+    sendLayerMessage(layerId, senderUsername, recipientUsername, content) {
+        return this.messageService.sendLayerMessage(layerId, senderUsername, recipientUsername, content);
+    }
+    getLayerConversationHistory(layerId, user1Username, user2Username) {
+        return this.messageService.getLayerConversationHistory(layerId, user1Username, user2Username);
+    }
+    getLayerRecentConversations(layerId, username) {
+        return this.messageService.getLayerRecentConversations(layerId, username);
     }
 };
 exports.MessageController = MessageController;
 __decorate([
-    (0, common_1.Post)(':sender/:recipient'),
-    __param(0, (0, common_1.Param)('sender')),
-    __param(1, (0, common_1.Param)('recipient')),
-    __param(2, (0, common_1.Body)('content')),
+    (0, common_1.Post)('orgs/:orgId/messages/:sender/:recipient'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('sender')),
+    __param(2, (0, common_1.Param)('recipient')),
+    __param(3, (0, common_1.Body)('content')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [Number, String, String, String]),
     __metadata("design:returntype", Promise)
-], MessageController.prototype, "sendMessage", null);
+], MessageController.prototype, "sendOrgMessage", null);
 __decorate([
-    (0, common_1.Get)('conversation/:user1/:user2'),
-    __param(0, (0, common_1.Param)('user1')),
-    __param(1, (0, common_1.Param)('user2')),
+    (0, common_1.Get)('orgs/:orgId/messages/conversation/:user1/:user2'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('user1')),
+    __param(2, (0, common_1.Param)('user2')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Number, String, String]),
     __metadata("design:returntype", Promise)
-], MessageController.prototype, "getConversationHistory", null);
+], MessageController.prototype, "getOrgConversationHistory", null);
 __decorate([
-    (0, common_1.Get)('recent/:username'),
-    __param(0, (0, common_1.Param)('username')),
+    (0, common_1.Get)('orgs/:orgId/messages/recent/:username'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
-], MessageController.prototype, "getRecentConversations", null);
+], MessageController.prototype, "getOrgRecentConversations", null);
+__decorate([
+    (0, common_1.Post)('layers/:layerId/messages/:sender/:recipient'),
+    __param(0, (0, common_1.Param)('layerId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('sender')),
+    __param(2, (0, common_1.Param)('recipient')),
+    __param(3, (0, common_1.Body)('content')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String, String]),
+    __metadata("design:returntype", Promise)
+], MessageController.prototype, "sendLayerMessage", null);
+__decorate([
+    (0, common_1.Get)('layers/:layerId/messages/conversation/:user1/:user2'),
+    __param(0, (0, common_1.Param)('layerId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('user1')),
+    __param(2, (0, common_1.Param)('user2')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", Promise)
+], MessageController.prototype, "getLayerConversationHistory", null);
+__decorate([
+    (0, common_1.Get)('layers/:layerId/messages/recent/:username'),
+    __param(0, (0, common_1.Param)('layerId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:returntype", Promise)
+], MessageController.prototype, "getLayerRecentConversations", null);
 exports.MessageController = MessageController = __decorate([
-    (0, common_1.Controller)('messages'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [message_service_1.MessageService])
 ], MessageController);
 //# sourceMappingURL=message.controller.js.map

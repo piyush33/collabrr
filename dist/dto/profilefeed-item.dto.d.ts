@@ -7,7 +7,7 @@ export declare class ProfileFeedItemDto {
     image?: string;
     picture?: string;
     text?: string;
-    parent?: string;
+    layerKey?: number;
     lock: boolean;
     privacy: boolean;
     userCreated?: User;

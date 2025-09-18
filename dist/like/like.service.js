@@ -29,13 +29,19 @@ let LikeService = class LikeService {
     }
     async likeItem(username, homefeedItemId) {
         console.log(`Liking item: User: ${username}, Homefeed Item: ${homefeedItemId}`);
-        const user = await this.userRepository.findOne({ where: { username }, relations: ['likes'] });
+        const user = await this.userRepository.findOne({
+            where: { username },
+            relations: ['likes'],
+        });
         if (!user) {
             console.log('User not found');
             throw new common_1.NotFoundException('User not found');
         }
         console.log('User found:', user);
-        const homefeedItem = await this.homefeedRepository.findOne({ where: { id: homefeedItemId }, relations: ['likes', 'createdBy'] });
+        const homefeedItem = await this.homefeedRepository.findOne({
+            where: { id: homefeedItemId },
+            relations: ['likes', 'createdBy'],
+        });
         if (!homefeedItem) {
             console.log('Feed item not found');
             throw new common_1.NotFoundException('Feed item not found');
@@ -64,12 +70,18 @@ let LikeService = class LikeService {
         return user;
     }
     async hasLiked(username, homefeedItemId) {
-        const user = await this.userRepository.findOne({ where: { username }, relations: ['likes'] });
+        const user = await this.userRepository.findOne({
+            where: { username },
+            relations: ['likes'],
+        });
         if (!user) {
             console.log('User not found');
             throw new common_1.NotFoundException('User not found');
         }
-        const homefeedItem = await this.homefeedRepository.findOne({ where: { id: homefeedItemId }, relations: ['likes'] });
+        const homefeedItem = await this.homefeedRepository.findOne({
+            where: { id: homefeedItemId },
+            relations: ['likes'],
+        });
         if (!homefeedItem) {
             console.log('Feed item not found');
             throw new common_1.NotFoundException('Feed item not found');
@@ -84,11 +96,17 @@ let LikeService = class LikeService {
         return !!existingLike;
     }
     async unlikeItem(username, homefeedItemId) {
-        const user = await this.userRepository.findOne({ where: { username }, relations: ['likes'] });
+        const user = await this.userRepository.findOne({
+            where: { username },
+            relations: ['likes'],
+        });
         if (!user) {
             throw new common_1.NotFoundException('User not found');
         }
-        const homefeedItem = await this.homefeedRepository.findOne({ where: { id: homefeedItemId }, relations: ['likes'] });
+        const homefeedItem = await this.homefeedRepository.findOne({
+            where: { id: homefeedItemId },
+            relations: ['likes'],
+        });
         if (!homefeedItem) {
             throw new common_1.NotFoundException('Feed item not found');
         }
@@ -102,9 +120,9 @@ let LikeService = class LikeService {
             throw new common_1.NotFoundException('Like not found');
         }
         await this.likeRepository.remove(existingLike);
-        user.likes = user.likes.filter(like => like.id !== existingLike.id);
+        user.likes = user.likes.filter((like) => like.id !== existingLike.id);
         await this.userRepository.save(user);
-        homefeedItem.likes = homefeedItem.likes.filter(like => like.id !== existingLike.id);
+        homefeedItem.likes = homefeedItem.likes.filter((like) => like.id !== existingLike.id);
         await this.homefeedRepository.save(homefeedItem);
     }
 };

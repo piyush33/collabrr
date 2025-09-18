@@ -7,13 +7,20 @@ import { ProfileUser } from '../profileusers/profileuser.entity';
 import { ProfileFeedItem } from '../profilefeed/profilefeed-item.entity';
 import { Homefeed } from '../homefeed/homefeed.entity';
 import { Notification } from 'src/notification/notification.entity';
-import { NotificationService } from 'src/notification/notification.service';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Like, ProfileUser, ProfileFeedItem, Homefeed, Notification]),
+    TypeOrmModule.forFeature([
+      Like,
+      ProfileUser,
+      ProfileFeedItem,
+      Homefeed,
+      Notification,
+    ]),
+    NotificationModule,
   ],
-  providers: [LikeService, NotificationService],
+  providers: [LikeService],
   controllers: [LikeController],
 })
-export class LikeModule { }
+export class LikeModule {}

@@ -21,6 +21,9 @@ const user_interaction_entity_1 = require("../homefeed/user-interaction.entity")
 const conversation_entity_1 = require("../message/conversation.entity");
 const message_entity_1 = require("../message/message.entity");
 const notification_entity_1 = require("../notification/notification.entity");
+const organization_member_entity_1 = require("../organization/organization-member.entity");
+const team_member_entity_1 = require("../organization/team-member.entity");
+const layer_member_entity_1 = require("../homefeed/layer-member.entity");
 let ProfileUser = class ProfileUser {
 };
 exports.ProfileUser = ProfileUser;
@@ -49,6 +52,18 @@ __decorate([
     __metadata("design:type", Array)
 ], ProfileUser.prototype, "sentMessages", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => team_member_entity_1.TeamMember, (m) => m.user),
+    __metadata("design:type", Array)
+], ProfileUser.prototype, "teamMemberships", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => layer_member_entity_1.LayerMember, (m) => m.user),
+    __metadata("design:type", Array)
+], ProfileUser.prototype, "layerMemberships", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => organization_member_entity_1.OrganizationMember, (m) => m.user),
+    __metadata("design:type", Array)
+], ProfileUser.prototype, "orgMemberships", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => conversation_entity_1.Conversation, (conversation) => conversation.user1),
     __metadata("design:type", Array)
 ], ProfileUser.prototype, "conversationsAsUser1", void 0);
@@ -69,7 +84,9 @@ __decorate([
     __metadata("design:type", Array)
 ], ProfileUser.prototype, "createdPosts", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => profilefeed_item_entity_1.ProfileFeedItem, (item) => item.userCreated, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => profilefeed_item_entity_1.ProfileFeedItem, (item) => item.userCreated, {
+        cascade: true,
+    }),
     __metadata("design:type", Array)
 ], ProfileUser.prototype, "created", void 0);
 __decorate([
@@ -97,7 +114,9 @@ __decorate([
     __metadata("design:type", Array)
 ], ProfileUser.prototype, "saves", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => user_interaction_entity_1.UserInteraction, (interaction) => interaction.user, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => user_interaction_entity_1.UserInteraction, (interaction) => interaction.user, {
+        cascade: true,
+    }),
     __metadata("design:type", Array)
 ], ProfileUser.prototype, "interactions", void 0);
 __decorate([

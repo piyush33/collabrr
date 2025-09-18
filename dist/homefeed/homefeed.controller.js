@@ -15,76 +15,93 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomefeedController = void 0;
 const common_1 = require("@nestjs/common");
 const homefeed_service_1 = require("./homefeed.service");
-const homefeed_entity_1 = require("./homefeed.entity");
 let HomefeedController = class HomefeedController {
     constructor(homefeedService) {
         this.homefeedService = homefeedService;
     }
-    findAll() {
-        return this.homefeedService.findAll();
+    getHomeFeed(orgId, username, limit) {
+        const lim = Number(limit ?? 50) || 50;
+        return this.homefeedService.getHomeFeed(orgId, username, lim);
     }
-    getHomeFeed(username) {
-        return this.homefeedService.getHomeFeed(username);
+    findOne(orgId, id, username) {
+        return this.homefeedService.findOne(orgId, id, username);
     }
-    findOne(id) {
-        return this.homefeedService.findOne(id);
+    create(orgId, username, body) {
+        const { allowedMemberIds, ...card } = body;
+        return this.homefeedService.create(orgId, username, card, {
+            allowedMemberIds,
+        });
     }
-    create(username, homefeed) {
-        return this.homefeedService.create(homefeed, username);
+    update(orgId, id, username, patch) {
+        return this.homefeedService.update(orgId, id, username, patch);
     }
-    update(id, homefeed) {
-        return this.homefeedService.update(id, homefeed);
+    remove(orgId, id, username) {
+        return this.homefeedService.remove(orgId, id, username);
     }
-    remove(id) {
-        return this.homefeedService.remove(id);
+    getLayerCards(orgId, layerId, username, limit) {
+        const lim = Number(limit ?? 50) || 50;
+        return this.homefeedService.getLayerFeed(orgId, username, layerId, lim);
     }
 };
 exports.HomefeedController = HomefeedController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('user/:username'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], HomefeedController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':username'),
-    __param(0, (0, common_1.Param)('username')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", void 0)
 ], HomefeedController.prototype, "getHomeFeed", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('item/:id/user/:username'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(2, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [Number, Number, String]),
+    __metadata("design:returntype", void 0)
 ], HomefeedController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(':username'),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Post)('user/:username'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('username')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, homefeed_entity_1.Homefeed]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [Number, String, Object]),
+    __metadata("design:returntype", void 0)
 ], HomefeedController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Put)('item/:id/user/:username'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(2, (0, common_1.Param)('username')),
+    __param(3, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, homefeed_entity_1.Homefeed]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [Number, Number, String, Object]),
+    __metadata("design:returntype", void 0)
 ], HomefeedController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)('item/:id/user/:username'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(2, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [Number, Number, String]),
+    __metadata("design:returntype", void 0)
 ], HomefeedController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)('/layers/:layerId/cards'),
+    __param(0, (0, common_1.Param)('orgId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('layerId', common_1.ParseIntPipe)),
+    __param(2, (0, common_1.Query)('username')),
+    __param(3, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, String, String]),
+    __metadata("design:returntype", void 0)
+], HomefeedController.prototype, "getLayerCards", null);
 exports.HomefeedController = HomefeedController = __decorate([
-    (0, common_1.Controller)('homefeed'),
+    (0, common_1.Controller)('orgs/:orgId/homefeed'),
     __metadata("design:paramtypes", [homefeed_service_1.HomefeedService])
 ], HomefeedController);
 //# sourceMappingURL=homefeed.controller.js.map
