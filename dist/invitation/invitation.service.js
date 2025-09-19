@@ -36,7 +36,7 @@ let InvitationService = class InvitationService {
         this.resendClient = resendClient;
     }
     appOrigin() {
-        return this.cfg.get('APP_ORIGIN') || 'http://localhost:3000';
+        return this.cfg.get('APP_ORIGIN') || 'https://collabrr.io';
     }
     emailFrom() {
         return this.cfg.get('EMAIL_FROM') || 'noreply@example.com';

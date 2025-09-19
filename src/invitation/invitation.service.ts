@@ -45,7 +45,7 @@ export class InvitationService {
   ) {}
 
   private appOrigin() {
-    return this.cfg.get<string>('APP_ORIGIN') || 'http://localhost:3000';
+    return this.cfg.get<string>('APP_ORIGIN') || 'https://collabrr.io';
   }
   private emailFrom() {
     return this.cfg.get<string>('EMAIL_FROM') || 'noreply@example.com';
