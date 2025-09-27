@@ -1,8 +1,11 @@
 export declare class CreateProfileFeedItemDto {
-    title: string;
-    description: string;
+    id?: number;
+    username?: string;
+    title?: string;
+    description?: string;
     image?: string;
+    picture?: string;
     text?: string;
-    parent?: string;
-    username: string;
+    layerKey?: number;
+    feedItemId?: number;
 }

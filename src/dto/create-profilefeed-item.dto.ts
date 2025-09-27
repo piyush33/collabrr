@@ -1,25 +1,14 @@
-import { IsString, IsOptional } from 'class-validator';
-
 export class CreateProfileFeedItemDto {
-    @IsString()
-    title: string;
+  // existing fields...
+  id?: number;
+  username?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  picture?: string;
+  text?: string;
+  layerKey?: number;
 
-    @IsString()
-    description: string;
-
-    @IsString()
-    @IsOptional()
-    image?: string;
-
-    @IsString()
-    @IsOptional()
-    text?: string;
-
-    @IsString()
-    @IsOptional()
-    parent?: string;
-
-    @IsString()
-    @IsOptional()
-    username: string;
+  /** When feedType is liked|reposted|saved, point to an existing item */
+  feedItemId?: number;
 }

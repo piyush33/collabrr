@@ -6,15 +6,17 @@ import { Homefeed } from '../homefeed/homefeed.entity';
 @Entity()
 @Unique(['user', 'homefeedItem'])
 export class Save {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => ProfileUser, (user) => user.saves)
-    user: ProfileUser;
+  @ManyToOne(() => ProfileUser, (user) => user.saves)
+  user: ProfileUser;
 
-    @ManyToOne(() => ProfileFeedItem, (feedItem) => feedItem.saves)
-    feedItem: ProfileFeedItem;
+  @ManyToOne(() => ProfileFeedItem, (feedItem) => feedItem.saves)
+  feedItem: ProfileFeedItem;
 
-    @ManyToOne(() => Homefeed, (homefeedItem) => homefeedItem.saves, { onDelete: 'CASCADE' })
-    homefeedItem: Homefeed;
+  @ManyToOne(() => Homefeed, (homefeedItem) => homefeedItem.saves, {
+    onDelete: 'CASCADE',
+  })
+  homefeedItem: Homefeed;
 }

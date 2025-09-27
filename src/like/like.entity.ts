@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-  Unique,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Unique } from 'typeorm';
 import { ProfileUser } from '../profileusers/profileuser.entity';
 import { ProfileFeedItem } from '../profilefeed/profilefeed-item.entity';
 import { Homefeed } from '../homefeed/homefeed.entity';

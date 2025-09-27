@@ -6,7 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository, FindOptionsWhere } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ProfileFeedItem } from './profilefeed-item.entity';
 import { ProfileUser } from '../profileusers/profileuser.entity';
 import { CreateProfileFeedItemDto } from '../dto/create-profilefeed-item.dto';
@@ -158,34 +158,81 @@ export class ProfileFeedService {
     return item;
   }
 
+  // src/profilefeed/profilefeed.service.ts (replace findAllByFeedType)
   async findAllByFeedType(
     orgId: number,
-    subjectUsername: string, // whose profile we’re viewing
+    subjectUsername: string,
     feedType: string,
-    viewerUsername: string, // who is viewing
+    viewerUsername: string,
   ): Promise<ProfileFeedItemDto[]> {
     this.assertValidFeedType(feedType);
     const subject = await this.getUser(subjectUsername);
     const viewer = await this.getUser(viewerUsername);
     await this.assertOrgExists(orgId);
 
-    // require viewer to be in org too (org-scoped profile)
+    // viewer & subject must both be org members
     await this.assertSubjectIsOrgMember(orgId, viewer.id);
-    // and subject present in org
     await this.assertSubjectIsOrgMember(orgId, subject.id);
     const viewerMem = await this.getOrgMembership(orgId, viewer.id);
 
-    const relationKey = FEED_RELATION_MAP[feedType];
-    const where: FindOptionsWhere<ProfileFeedItem> = {
-      organization: { id: orgId },
-      [relationKey]: { id: subject.id } as any,
-    };
+    let items: ProfileFeedItem[] = [];
 
-    const items = await this.profileFeedRepository.find({
-      where,
-      order: { id: 'DESC' },
-    });
+    switch (feedType as FeedType) {
+      case 'created': {
+        items = await this.profileFeedRepository.find({
+          where: {
+            organization: { id: orgId },
+            userCreated: { id: subject.id } as any,
+          },
+          order: { id: 'DESC' },
+        });
+        break;
+      }
+      case 'liked': {
+        const likes = (await this.layerMemberRepo.manager
+          .getRepository('Like')
+          .find({
+            where: {
+              user: { id: subject.id },
+              organization: { id: orgId },
+            },
+            relations: ['feedItem'],
+            order: { id: 'DESC' },
+          })) as any[];
+        items = likes.map((l) => l.feedItem).filter(Boolean);
+        break;
+      }
+      case 'reposted': {
+        const reposts = (await this.layerMemberRepo.manager
+          .getRepository('Repost')
+          .find({
+            where: {
+              user: { id: subject.id },
+              organization: { id: orgId },
+            },
+            relations: ['feedItem'],
+            order: { id: 'DESC' },
+          })) as any[];
+        items = reposts.map((r) => r.feedItem).filter(Boolean);
+        break;
+      }
+      case 'saved': {
+        const saves = (await this.layerMemberRepo.manager
+          .getRepository('Save')
+          .find({
+            where: {
+              user: { id: subject.id },
+              organization: { id: orgId },
+            },
+            relations: ['feedItem'],
+            order: { id: 'DESC' },
+          })) as any[];
+        items = saves.map((s) => s.feedItem).filter(Boolean);
+        break;
+      }
+    }
 
+    // Layer lock filtering still applies
     const filtered = await this.filterByLayerLock(
       orgId,
       viewer.id,
@@ -209,19 +256,90 @@ export class ProfileFeedService {
     const org = await this.assertOrgExists(orgId);
     await this.assertSubjectIsOrgMember(orgId, user.id);
 
-    const relationKey = FEED_RELATION_MAP[feedType];
+    if (feedType === 'created') {
+      // unchanged: create a new post
+      const feedItem = this.profileFeedRepository.create({
+        ...dto,
+        username: dto.username ?? username,
+        organization: org as Organization,
+        userCreated: user,
+      });
+      const saved = await this.profileFeedRepository.save(feedItem);
+      return this.toDto(saved);
+    }
 
-    const feedItem = this.profileFeedRepository.create({
-      ...dto,
-      username: dto.username ?? username,
-      organization: org as Organization,
+    // --- interactions: liked|reposted|saved ---
+    if (!dto.feedItemId) {
+      throw new BadRequestException('feedItemId is required for this feedType');
+    }
+    const target = await this.profileFeedRepository.findOne({
+      where: { id: dto.feedItemId, organization: { id: orgId } },
     });
+    if (!target) throw new NotFoundException('Target feed item not found');
 
-    // set the correct relation (userCreated / userLiked / userReposted / userSaved)
-    (feedItem as any)[relationKey] = user;
-
-    const saved = await this.profileFeedRepository.save(feedItem);
-    return this.toDto(saved);
+    switch (feedType as FeedType) {
+      case 'liked': {
+        const likeRepo = this.layerMemberRepo.manager.getRepository('Like');
+        // upsert to avoid duplicate likes
+        const existing = await likeRepo.findOne({
+          where: {
+            user: { id: user.id },
+            feedItem: { id: target.id },
+            organization: { id: orgId },
+          },
+        });
+        if (!existing) {
+          await likeRepo.save(
+            likeRepo.create({
+              user,
+              feedItem: target,
+              organization: org,
+            }),
+          );
+        }
+        return this.toDto(target);
+      }
+      case 'reposted': {
+        const repo = this.layerMemberRepo.manager.getRepository('Repost');
+        const existing = await repo.findOne({
+          where: {
+            user: { id: user.id },
+            feedItem: { id: target.id },
+            organization: { id: orgId },
+          },
+        });
+        if (!existing) {
+          await repo.save(
+            repo.create({
+              user,
+              feedItem: target,
+              organization: org,
+            }),
+          );
+        }
+        return this.toDto(target);
+      }
+      case 'saved': {
+        const saveRepo = this.layerMemberRepo.manager.getRepository('Save');
+        const existing = await saveRepo.findOne({
+          where: {
+            user: { id: user.id },
+            feedItem: { id: target.id },
+            organization: { id: orgId },
+          },
+        });
+        if (!existing) {
+          await saveRepo.save(
+            saveRepo.create({
+              user,
+              feedItem: target,
+              organization: org,
+            }),
+          );
+        }
+        return this.toDto(target);
+      }
+    }
   }
 
   async update(
@@ -243,7 +361,7 @@ export class ProfileFeedService {
   async delete(
     orgId: number,
     username: string,
-    id: number,
+    id: number, // treat as target feed item id for interactions
     feedType: string,
   ): Promise<void> {
     this.assertValidFeedType(feedType);
@@ -251,18 +369,48 @@ export class ProfileFeedService {
     await this.assertOrgExists(orgId);
     await this.assertSubjectIsOrgMember(orgId, user.id);
 
-    const relationKey = FEED_RELATION_MAP[feedType];
+    if (feedType === 'created') {
+      // delete the authored post (unchanged)
+      const item = await this.profileFeedRepository.findOne({
+        where: {
+          id,
+          organization: { id: orgId },
+          userCreated: { id: user.id } as any,
+        },
+      });
+      if (!item) throw new NotFoundException('Feed item not found');
+      await this.profileFeedRepository.delete(item.id);
+      return;
+    }
 
-    const item = await this.profileFeedRepository.findOne({
-      where: {
-        id,
-        organization: { id: orgId },
-        [relationKey]: { id: user.id } as any,
-      },
+    // interactions removal
+    const target = await this.profileFeedRepository.findOne({
+      where: { id, organization: { id: orgId } },
     });
-    if (!item) throw new NotFoundException('Feed item not found');
+    if (!target) throw new NotFoundException('Target feed item not found');
 
-    await this.profileFeedRepository.delete(item.id);
+    if (feedType === 'liked') {
+      const likeRepo = this.layerMemberRepo.manager.getRepository('Like');
+      await likeRepo.delete({
+        user: { id: user.id } as any,
+        feedItem: { id: target.id } as any,
+        organization: { id: orgId } as any,
+      });
+    } else if (feedType === 'reposted') {
+      const repo = this.layerMemberRepo.manager.getRepository('Repost');
+      await repo.delete({
+        user: { id: user.id } as any,
+        feedItem: { id: target.id } as any,
+        organization: { id: orgId } as any,
+      });
+    } else if (feedType === 'saved') {
+      const saveRepo = this.layerMemberRepo.manager.getRepository('Save');
+      await saveRepo.delete({
+        user: { id: user.id } as any,
+        feedItem: { id: target.id } as any,
+        organization: { id: orgId } as any,
+      });
+    }
   }
 
   // ---------- mapping ----------
