@@ -158,7 +158,6 @@ export class ProfileFeedService {
     return item;
   }
 
-  // src/profilefeed/profilefeed.service.ts (replace findAllByFeedType)
   async findAllByFeedType(
     orgId: number,
     subjectUsername: string,

@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const profileuser_entity_1 = require("../profileusers/profileuser.entity");
 const profilefeed_item_entity_1 = require("../profilefeed/profilefeed-item.entity");
 const homefeed_entity_1 = require("../homefeed/homefeed.entity");
+const organization_entity_1 = require("../organization/organization.entity");
 let Like = class Like {
 };
 exports.Like = Like;
@@ -37,6 +38,11 @@ __decorate([
     }),
     __metadata("design:type", homefeed_entity_1.Homefeed)
 ], Like.prototype, "homefeedItem", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, { onDelete: 'CASCADE', nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'organizationId' }),
+    __metadata("design:type", organization_entity_1.Organization)
+], Like.prototype, "organization", void 0);
 exports.Like = Like = __decorate([
     (0, typeorm_1.Entity)(),
     (0, typeorm_1.Unique)(['user', 'homefeedItem'])
