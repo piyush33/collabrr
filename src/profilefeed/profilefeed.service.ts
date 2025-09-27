@@ -16,6 +16,7 @@ import { OrganizationMember } from 'src/organization/organization-member.entity'
 import { LinkedCardLayer } from 'src/homefeed/linked-card-layer.entity';
 import { LayerMember } from 'src/homefeed/layer-member.entity';
 import { OrgRole } from 'src/organization/organization-member.entity';
+import { Homefeed } from 'src/homefeed/homefeed.entity';
 
 type FeedType = 'created' | 'liked' | 'reposted' | 'saved';
 
@@ -41,6 +42,7 @@ export class ProfileFeedService {
     private layerRepo: Repository<LinkedCardLayer>,
     @InjectRepository(LayerMember)
     private layerMemberRepo: Repository<LayerMember>,
+    @InjectRepository(Homefeed) private homeRepo: Repository<Homefeed>,
   ) {}
 
   // ---------- helpers ----------
@@ -256,15 +258,27 @@ export class ProfileFeedService {
     await this.assertSubjectIsOrgMember(orgId, user.id);
 
     if (feedType === 'created') {
-      // unchanged: create a new post
       const feedItem = this.profileFeedRepository.create({
         ...dto,
         username: dto.username ?? username,
         organization: org as Organization,
         userCreated: user,
       });
-      const saved = await this.profileFeedRepository.save(feedItem);
-      return this.toDto(saved);
+
+      if (dto.homefeedItemId) {
+        const hf = await this.homeRepo.findOne({
+          where: { id: dto.homefeedItemId, organization: { id: orgId } },
+        });
+        if (!hf) throw new NotFoundException('Homefeed item not found');
+        (feedItem as any).homefeedItem = hf;
+
+        const saved = await this.profileFeedRepository.save(feedItem);
+
+        hf.profileFeedItemId = saved.id; // no extra join needed later
+        await this.homeRepo.save(hf);
+
+        return this.toDto(saved);
+      }
     }
 
     // --- interactions: liked|reposted|saved ---

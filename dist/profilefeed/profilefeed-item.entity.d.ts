@@ -4,6 +4,7 @@ import { Repost } from '../repost/repost.entity';
 import { Save } from '../save/save.entity';
 import { Organization } from 'src/organization/organization.entity';
 import { Team } from 'src/organization/team.entity';
+import { Homefeed } from 'src/homefeed/homefeed.entity';
 declare enum Visibility {
     ORG = "org",
     LAYER = "layer",
@@ -33,5 +34,6 @@ export declare class ProfileFeedItem {
     likes: Like[];
     reposts: Repost[];
     saves: Save[];
+    homefeedItem?: Homefeed;
 }
 export {};

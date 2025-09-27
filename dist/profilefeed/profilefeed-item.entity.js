@@ -17,6 +17,7 @@ const repost_entity_1 = require("../repost/repost.entity");
 const save_entity_1 = require("../save/save.entity");
 const organization_entity_1 = require("../organization/organization.entity");
 const team_entity_1 = require("../organization/team.entity");
+const homefeed_entity_1 = require("../homefeed/homefeed.entity");
 var Visibility;
 (function (Visibility) {
     Visibility["ORG"] = "org";
@@ -115,6 +116,15 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => save_entity_1.Save, (save) => save.feedItem),
     __metadata("design:type", Array)
 ], ProfileFeedItem.prototype, "saves", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => homefeed_entity_1.Homefeed, (h) => h.profileFeedItem, {
+        nullable: true,
+        onDelete: 'SET NULL',
+        eager: false,
+    }),
+    (0, typeorm_1.JoinColumn)({ name: 'homefeedItemId' }),
+    __metadata("design:type", homefeed_entity_1.Homefeed)
+], ProfileFeedItem.prototype, "homefeedItem", void 0);
 exports.ProfileFeedItem = ProfileFeedItem = __decorate([
     (0, typeorm_1.Entity)()
 ], ProfileFeedItem);

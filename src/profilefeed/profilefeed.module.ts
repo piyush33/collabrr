@@ -8,6 +8,7 @@ import { Organization } from 'src/organization/organization.entity';
 import { OrganizationMember } from 'src/organization/organization-member.entity';
 import { LinkedCardLayer } from 'src/homefeed/linked-card-layer.entity';
 import { LayerMember } from 'src/homefeed/layer-member.entity';
+import { Homefeed } from 'src/homefeed/homefeed.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LayerMember } from 'src/homefeed/layer-member.entity';
       OrganizationMember,
       LinkedCardLayer,
       LayerMember,
+      Homefeed,
     ]),
   ],
   providers: [ProfileFeedService],

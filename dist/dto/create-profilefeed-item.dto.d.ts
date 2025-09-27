@@ -8,4 +8,5 @@ export declare class CreateProfileFeedItemDto {
     text?: string;
     layerKey?: number;
     feedItemId?: number;
+    homefeedItemId?: number;
 }

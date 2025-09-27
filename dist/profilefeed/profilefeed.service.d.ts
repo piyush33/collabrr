@@ -7,6 +7,7 @@ import { Organization } from 'src/organization/organization.entity';
 import { OrganizationMember } from 'src/organization/organization-member.entity';
 import { LinkedCardLayer } from 'src/homefeed/linked-card-layer.entity';
 import { LayerMember } from 'src/homefeed/layer-member.entity';
+import { Homefeed } from 'src/homefeed/homefeed.entity';
 export declare class ProfileFeedService {
     private profileFeedRepository;
     private userRepository;
@@ -14,7 +15,8 @@ export declare class ProfileFeedService {
     private orgMemberRepo;
     private layerRepo;
     private layerMemberRepo;
-    constructor(profileFeedRepository: Repository<ProfileFeedItem>, userRepository: Repository<ProfileUser>, orgRepository: Repository<Organization>, orgMemberRepo: Repository<OrganizationMember>, layerRepo: Repository<LinkedCardLayer>, layerMemberRepo: Repository<LayerMember>);
+    private homeRepo;
+    constructor(profileFeedRepository: Repository<ProfileFeedItem>, userRepository: Repository<ProfileUser>, orgRepository: Repository<Organization>, orgMemberRepo: Repository<OrganizationMember>, layerRepo: Repository<LinkedCardLayer>, layerMemberRepo: Repository<LayerMember>, homeRepo: Repository<Homefeed>);
     private assertValidFeedType;
     private getUser;
     private assertOrgExists;

@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { ProfileUser } from '../profileusers/profileuser.entity';
 import { Like } from '../like/like.entity';
@@ -11,6 +13,7 @@ import { Repost } from '../repost/repost.entity';
 import { Save } from '../save/save.entity';
 import { Organization } from 'src/organization/organization.entity';
 import { Team } from 'src/organization/team.entity';
+import { Homefeed } from 'src/homefeed/homefeed.entity';
 
 enum Visibility {
   ORG = 'org',
@@ -85,4 +88,12 @@ export class ProfileFeedItem {
 
   @OneToMany(() => Save, (save) => save.feedItem)
   saves: Save[];
+
+  @OneToOne(() => Homefeed, (h) => h.profileFeedItem, {
+    nullable: true,
+    onDelete: 'SET NULL', // or 'CASCADE' if you want to remove profile post when homefeed card is deleted
+    eager: false,
+  })
+  @JoinColumn({ name: 'homefeedItemId' }) // creates FK column "homefeedItemId"
+  homefeedItem?: Homefeed;
 }

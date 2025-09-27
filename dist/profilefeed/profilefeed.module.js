@@ -17,6 +17,7 @@ const organization_entity_1 = require("../organization/organization.entity");
 const organization_member_entity_1 = require("../organization/organization-member.entity");
 const linked_card_layer_entity_1 = require("../homefeed/linked-card-layer.entity");
 const layer_member_entity_1 = require("../homefeed/layer-member.entity");
+const homefeed_entity_1 = require("../homefeed/homefeed.entity");
 let ProfileFeedModule = class ProfileFeedModule {
 };
 exports.ProfileFeedModule = ProfileFeedModule;
@@ -30,6 +31,7 @@ exports.ProfileFeedModule = ProfileFeedModule = __decorate([
                 organization_member_entity_1.OrganizationMember,
                 linked_card_layer_entity_1.LinkedCardLayer,
                 layer_member_entity_1.LayerMember,
+                homefeed_entity_1.Homefeed,
             ]),
         ],
         providers: [profilefeed_service_1.ProfileFeedService],

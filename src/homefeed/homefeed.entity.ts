@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Like } from '../like/like.entity';
 import { Repost } from '../repost/repost.entity';
@@ -15,6 +17,7 @@ import { Notification } from 'src/notification/notification.entity';
 import { Organization } from 'src/organization/organization.entity';
 import { LinkedCardLayer } from './linked-card-layer.entity';
 import { Team } from 'src/organization/team.entity';
+import { ProfileFeedItem } from 'src/profilefeed/profilefeed-item.entity';
 
 export enum Visibility {
   ORG = 'org',
@@ -100,4 +103,14 @@ export class Homefeed {
 
   @OneToMany(() => Notification, (notification) => notification.homefeedItem)
   notifications: Notification[];
+
+  @OneToOne(() => ProfileFeedItem, (p) => p.homefeedItem, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'profileFeedItemId' }) // FK column on Homefeed
+  profileFeedItem?: ProfileFeedItem;
+
+  @Column({ nullable: true })
+  profileFeedItemId?: number;
 }

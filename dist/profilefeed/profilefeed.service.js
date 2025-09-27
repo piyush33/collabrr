@@ -23,6 +23,7 @@ const organization_member_entity_1 = require("../organization/organization-membe
 const linked_card_layer_entity_1 = require("../homefeed/linked-card-layer.entity");
 const layer_member_entity_1 = require("../homefeed/layer-member.entity");
 const organization_member_entity_2 = require("../organization/organization-member.entity");
+const homefeed_entity_1 = require("../homefeed/homefeed.entity");
 const FEED_RELATION_MAP = {
     created: 'userCreated',
     liked: 'userLiked',
@@ -30,13 +31,14 @@ const FEED_RELATION_MAP = {
     saved: 'userSaved',
 };
 let ProfileFeedService = class ProfileFeedService {
-    constructor(profileFeedRepository, userRepository, orgRepository, orgMemberRepo, layerRepo, layerMemberRepo) {
+    constructor(profileFeedRepository, userRepository, orgRepository, orgMemberRepo, layerRepo, layerMemberRepo, homeRepo) {
         this.profileFeedRepository = profileFeedRepository;
         this.userRepository = userRepository;
         this.orgRepository = orgRepository;
         this.orgMemberRepo = orgMemberRepo;
         this.layerRepo = layerRepo;
         this.layerMemberRepo = layerMemberRepo;
+        this.homeRepo = homeRepo;
     }
     assertValidFeedType(feedType) {
         if (!['created', 'liked', 'reposted', 'saved'].includes(feedType)) {
@@ -213,8 +215,18 @@ let ProfileFeedService = class ProfileFeedService {
                 organization: org,
                 userCreated: user,
             });
-            const saved = await this.profileFeedRepository.save(feedItem);
-            return this.toDto(saved);
+            if (dto.homefeedItemId) {
+                const hf = await this.homeRepo.findOne({
+                    where: { id: dto.homefeedItemId, organization: { id: orgId } },
+                });
+                if (!hf)
+                    throw new common_1.NotFoundException('Homefeed item not found');
+                feedItem.homefeedItem = hf;
+                const saved = await this.profileFeedRepository.save(feedItem);
+                hf.profileFeedItemId = saved.id;
+                await this.homeRepo.save(hf);
+                return this.toDto(saved);
+            }
         }
         if (!dto.feedItemId) {
             throw new common_1.BadRequestException('feedItemId is required for this feedType');
@@ -364,7 +376,9 @@ exports.ProfileFeedService = ProfileFeedService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(organization_member_entity_1.OrganizationMember)),
     __param(4, (0, typeorm_1.InjectRepository)(linked_card_layer_entity_1.LinkedCardLayer)),
     __param(5, (0, typeorm_1.InjectRepository)(layer_member_entity_1.LayerMember)),
+    __param(6, (0, typeorm_1.InjectRepository)(homefeed_entity_1.Homefeed)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

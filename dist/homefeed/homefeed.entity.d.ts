@@ -8,6 +8,7 @@ import { Notification } from 'src/notification/notification.entity';
 import { Organization } from 'src/organization/organization.entity';
 import { LinkedCardLayer } from './linked-card-layer.entity';
 import { Team } from 'src/organization/team.entity';
+import { ProfileFeedItem } from 'src/profilefeed/profilefeed-item.entity';
 export declare enum Visibility {
     ORG = "org",
     LAYER = "layer",
@@ -38,4 +39,6 @@ export declare class Homefeed {
     interactions: UserInteraction[];
     createdBy: ProfileUser;
     notifications: Notification[];
+    profileFeedItem?: ProfileFeedItem;
+    profileFeedItemId?: number;
 }

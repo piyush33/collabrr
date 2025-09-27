@@ -11,4 +11,5 @@ export class CreateProfileFeedItemDto {
 
   /** When feedType is liked|reposted|saved, point to an existing item */
   feedItemId?: number;
+  homefeedItemId?: number;
 }

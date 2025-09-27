@@ -21,6 +21,7 @@ const notification_entity_1 = require("../notification/notification.entity");
 const organization_entity_1 = require("../organization/organization.entity");
 const linked_card_layer_entity_1 = require("./linked-card-layer.entity");
 const team_entity_1 = require("../organization/team.entity");
+const profilefeed_item_entity_1 = require("../profilefeed/profilefeed-item.entity");
 var Visibility;
 (function (Visibility) {
     Visibility["ORG"] = "org";
@@ -130,6 +131,18 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => notification_entity_1.Notification, (notification) => notification.homefeedItem),
     __metadata("design:type", Array)
 ], Homefeed.prototype, "notifications", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => profilefeed_item_entity_1.ProfileFeedItem, (p) => p.homefeedItem, {
+        nullable: true,
+        onDelete: 'SET NULL',
+    }),
+    (0, typeorm_1.JoinColumn)({ name: 'profileFeedItemId' }),
+    __metadata("design:type", profilefeed_item_entity_1.ProfileFeedItem)
+], Homefeed.prototype, "profileFeedItem", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Homefeed.prototype, "profileFeedItemId", void 0);
 exports.Homefeed = Homefeed = __decorate([
     (0, typeorm_1.Entity)()
 ], Homefeed);
