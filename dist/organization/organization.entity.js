@@ -17,7 +17,7 @@ const profilefeed_item_entity_1 = require("../profilefeed/profilefeed-item.entit
 const linked_card_layer_entity_1 = require("../homefeed/linked-card-layer.entity");
 var JoinPolicy;
 (function (JoinPolicy) {
-    JoinPolicy["INVITE_ONLY"] = "invite_only";
+    JoinPolicy["INVITE_ONLY"] = "invite";
     JoinPolicy["DOMAIN"] = "domain";
     JoinPolicy["OPEN"] = "open";
 })(JoinPolicy || (exports.JoinPolicy = JoinPolicy = {}));

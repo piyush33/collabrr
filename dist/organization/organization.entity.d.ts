@@ -3,7 +3,7 @@ import { OrganizationMember } from './organization-member.entity';
 import { ProfileFeedItem } from 'src/profilefeed/profilefeed-item.entity';
 import { LinkedCardLayer } from 'src/homefeed/linked-card-layer.entity';
 export declare enum JoinPolicy {
-    INVITE_ONLY = "invite_only",
+    INVITE_ONLY = "invite",
     DOMAIN = "domain",
     OPEN = "open"
 }
