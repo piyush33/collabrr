@@ -25,6 +25,7 @@ async function bootstrap() {
       'Accept',
       'Access-Control-Request-Method',
       'Access-Control-Request-Headers',
+      'X-Org-Id',
     ],
     credentials: false, // set to false if you don’t actually use cookies/auth via browser credentials
     maxAge: 86400,

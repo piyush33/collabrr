@@ -25,6 +25,7 @@ async function bootstrap() {
             'Accept',
             'Access-Control-Request-Method',
             'Access-Control-Request-Headers',
+            'X-Org-Id',
         ],
         credentials: false,
         maxAge: 86400,
