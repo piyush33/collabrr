@@ -263,6 +263,8 @@ export class ProfileFeedService {
         username: dto.username ?? username,
         organization: org as Organization,
         userCreated: user,
+        phase: dto.phase ?? null,
+        roleTypes: dto.roleTypes ?? [],
       });
 
       if (dto.homefeedItemId) {
@@ -439,6 +441,8 @@ export class ProfileFeedService {
       layerKey: feedItem.layerKey,
       lock: feedItem.lock,
       privacy: feedItem.privacy,
+      phase: feedItem.phase ?? null,
+      roleTypes: feedItem.roleTypes ?? [],
     };
   }
 }

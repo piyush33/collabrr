@@ -6,6 +6,7 @@ import {
   ManyToOne,
   OneToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Like } from '../like/like.entity';
 import { Repost } from '../repost/repost.entity';
@@ -18,6 +19,7 @@ import { Organization } from 'src/organization/organization.entity';
 import { LinkedCardLayer } from './linked-card-layer.entity';
 import { Team } from 'src/organization/team.entity';
 import { ProfileFeedItem } from 'src/profilefeed/profilefeed-item.entity';
+import { Phase, RoleType } from 'src/common/enums/content-metadata.enum';
 
 export enum Visibility {
   ORG = 'org',
@@ -113,4 +115,22 @@ export class Homefeed {
 
   @Column({ nullable: true })
   profileFeedItemId?: number;
+
+  @Index('idx_homefeed_phase')
+  @Column({
+    type: 'enum',
+    enum: Phase,
+    enumName: 'phase_enum',
+    nullable: true,
+  })
+  phase?: Phase | null;
+
+  @Column({
+    type: 'enum',
+    enum: RoleType,
+    enumName: 'role_type_enum',
+    array: true,
+    default: '{}',
+  })
+  roleTypes!: RoleType[];
 }

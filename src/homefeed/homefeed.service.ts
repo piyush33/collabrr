@@ -452,6 +452,8 @@ export class HomefeedService {
       createdBy: { id: me.id } as ProfileUser,
       layer,
       team,
+      phase: dto.phase ?? null,
+      roleTypes: dto.roleTypes ?? [],
     });
 
     const saved = await this.homefeedRepository.save(entity);

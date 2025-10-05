@@ -1,3 +1,5 @@
+import { Phase, RoleType } from 'src/common/enums/content-metadata.enum';
+
 export class CreateProfileFeedItemDto {
   // existing fields...
   id?: number;
@@ -12,4 +14,7 @@ export class CreateProfileFeedItemDto {
   /** When feedType is liked|reposted|saved, point to an existing item */
   feedItemId?: number;
   homefeedItemId?: number;
+
+  phase?: Phase | null;
+  roleTypes: RoleType[];
 }

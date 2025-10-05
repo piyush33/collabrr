@@ -6,6 +6,7 @@ import {
   OneToMany,
   JoinColumn,
   OneToOne,
+  Index,
 } from 'typeorm';
 import { ProfileUser } from '../profileusers/profileuser.entity';
 import { Like } from '../like/like.entity';
@@ -14,6 +15,7 @@ import { Save } from '../save/save.entity';
 import { Organization } from 'src/organization/organization.entity';
 import { Team } from 'src/organization/team.entity';
 import { Homefeed } from 'src/homefeed/homefeed.entity';
+import { Phase, RoleType } from 'src/common/enums/content-metadata.enum';
 
 enum Visibility {
   ORG = 'org',
@@ -96,4 +98,22 @@ export class ProfileFeedItem {
   })
   @JoinColumn({ name: 'homefeedItemId' }) // creates FK column "homefeedItemId"
   homefeedItem?: Homefeed;
+
+  @Index('idx_profilefeed_phase')
+  @Column({
+    type: 'enum',
+    enum: Phase,
+    enumName: 'phase_enum', // reuse same DB enum
+    nullable: true,
+  })
+  phase?: Phase | null;
+
+  @Column({
+    type: 'enum',
+    enum: RoleType,
+    enumName: 'role_type_enum', // reuse same DB enum
+    array: true,
+    default: '{}',
+  })
+  roleTypes!: RoleType[];
 }

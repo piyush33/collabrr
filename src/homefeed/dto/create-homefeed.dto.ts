@@ -1,5 +1,6 @@
 // src/homefeed/dto/create-homefeed.dto.ts
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsNumber,
@@ -7,6 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Visibility } from '../homefeed.entity';
+import { Phase, RoleType } from 'src/common/enums/content-metadata.enum';
 
 export class CreateHomefeedDto {
   @IsOptional() @IsString() title?: string;
@@ -29,4 +31,12 @@ export class CreateHomefeedDto {
 
   // locking
   @IsOptional() @IsBoolean() lock?: boolean; // when true and a layer exists, lock it
+  @IsOptional()
+  @IsEnum(Phase)
+  phase?: Phase;
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(RoleType, { each: true })
+  roleTypes?: RoleType[];
 }

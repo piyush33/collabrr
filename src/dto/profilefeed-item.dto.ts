@@ -1,3 +1,4 @@
+import { Phase, RoleType } from 'src/common/enums/content-metadata.enum';
 import { User } from '../users/user.entity';
 
 export class ProfileFeedItemDto {
@@ -15,4 +16,6 @@ export class ProfileFeedItemDto {
   userReposted?: User;
   userLiked?: User;
   userSaved?: User;
+  phase?: Phase | null;
+  roleTypes: RoleType[];
 }
