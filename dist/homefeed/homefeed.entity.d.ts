@@ -9,6 +9,7 @@ import { Organization } from 'src/organization/organization.entity';
 import { LinkedCardLayer } from './linked-card-layer.entity';
 import { Team } from 'src/organization/team.entity';
 import { ProfileFeedItem } from 'src/profilefeed/profilefeed-item.entity';
+import { Phase, RoleType } from 'src/common/enums/content-metadata.enum';
 export declare enum Visibility {
     ORG = "org",
     LAYER = "layer",
@@ -41,4 +42,6 @@ export declare class Homefeed {
     notifications: Notification[];
     profileFeedItem?: ProfileFeedItem;
     profileFeedItemId?: number;
+    phase?: Phase | null;
+    roleTypes: RoleType[];
 }

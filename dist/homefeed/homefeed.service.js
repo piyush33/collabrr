@@ -314,6 +314,8 @@ let HomefeedService = class HomefeedService {
             createdBy: { id: me.id },
             layer,
             team,
+            phase: dto.phase ?? null,
+            roleTypes: dto.roleTypes ?? [],
         });
         const saved = await this.homefeedRepository.save(entity);
         const allowedIds = dto.allowedMemberIds ?? opts?.allowedMemberIds ?? [];

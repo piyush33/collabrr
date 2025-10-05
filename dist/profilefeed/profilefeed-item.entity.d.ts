@@ -5,6 +5,7 @@ import { Save } from '../save/save.entity';
 import { Organization } from 'src/organization/organization.entity';
 import { Team } from 'src/organization/team.entity';
 import { Homefeed } from 'src/homefeed/homefeed.entity';
+import { Phase, RoleType } from 'src/common/enums/content-metadata.enum';
 declare enum Visibility {
     ORG = "org",
     LAYER = "layer",
@@ -35,5 +36,7 @@ export declare class ProfileFeedItem {
     reposts: Repost[];
     saves: Save[];
     homefeedItem?: Homefeed;
+    phase?: Phase | null;
+    roleTypes: RoleType[];
 }
 export {};

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateHomefeedDto = void 0;
 const class_validator_1 = require("class-validator");
 const homefeed_entity_1 = require("../homefeed.entity");
+const content_metadata_enum_1 = require("../../common/enums/content-metadata.enum");
 class CreateHomefeedDto {
 }
 exports.CreateHomefeedDto = CreateHomefeedDto;
@@ -79,4 +80,15 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], CreateHomefeedDto.prototype, "lock", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(content_metadata_enum_1.Phase),
+    __metadata("design:type", String)
+], CreateHomefeedDto.prototype, "phase", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsEnum)(content_metadata_enum_1.RoleType, { each: true }),
+    __metadata("design:type", Array)
+], CreateHomefeedDto.prototype, "roleTypes", void 0);
 //# sourceMappingURL=create-homefeed.dto.js.map

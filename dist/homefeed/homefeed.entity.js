@@ -22,6 +22,7 @@ const organization_entity_1 = require("../organization/organization.entity");
 const linked_card_layer_entity_1 = require("./linked-card-layer.entity");
 const team_entity_1 = require("../organization/team.entity");
 const profilefeed_item_entity_1 = require("../profilefeed/profilefeed-item.entity");
+const content_metadata_enum_1 = require("../common/enums/content-metadata.enum");
 var Visibility;
 (function (Visibility) {
     Visibility["ORG"] = "org";
@@ -143,6 +144,26 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Homefeed.prototype, "profileFeedItemId", void 0);
+__decorate([
+    (0, typeorm_1.Index)('idx_homefeed_phase'),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: content_metadata_enum_1.Phase,
+        enumName: 'phase_enum',
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], Homefeed.prototype, "phase", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: content_metadata_enum_1.RoleType,
+        enumName: 'role_type_enum',
+        array: true,
+        default: '{}',
+    }),
+    __metadata("design:type", Array)
+], Homefeed.prototype, "roleTypes", void 0);
 exports.Homefeed = Homefeed = __decorate([
     (0, typeorm_1.Entity)()
 ], Homefeed);

@@ -214,6 +214,8 @@ let ProfileFeedService = class ProfileFeedService {
                 username: dto.username ?? username,
                 organization: org,
                 userCreated: user,
+                phase: dto.phase ?? null,
+                roleTypes: dto.roleTypes ?? [],
             });
             if (dto.homefeedItemId) {
                 const hf = await this.homeRepo.findOne({
@@ -364,6 +366,8 @@ let ProfileFeedService = class ProfileFeedService {
             layerKey: feedItem.layerKey,
             lock: feedItem.lock,
             privacy: feedItem.privacy,
+            phase: feedItem.phase ?? null,
+            roleTypes: feedItem.roleTypes ?? [],
         };
     }
 };
