@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleType = exports.Phase = void 0;
 var Phase;
 (function (Phase) {
+    Phase["BACKLOG"] = "backlog";
     Phase["SEED_INITIAL_DISCUSS"] = "seed-initial-discuss";
     Phase["DISCOVERY_BRAINSTORM"] = "discovery-brainstorm";
     Phase["HYPOTHESIS_OPTIONS"] = "hypothesis-options";
@@ -14,6 +15,8 @@ var Phase;
 })(Phase || (exports.Phase = Phase = {}));
 var RoleType;
 (function (RoleType) {
+    RoleType["FEATURE"] = "feature";
+    RoleType["BUG"] = "bug";
     RoleType["QUESTION"] = "question";
     RoleType["CLAIM"] = "claim";
     RoleType["COUNTER_CLAIM"] = "counter-claim";

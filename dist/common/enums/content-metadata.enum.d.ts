@@ -1,4 +1,5 @@
 export declare enum Phase {
+    BACKLOG = "backlog",
     SEED_INITIAL_DISCUSS = "seed-initial-discuss",
     DISCOVERY_BRAINSTORM = "discovery-brainstorm",
     HYPOTHESIS_OPTIONS = "hypothesis-options",
@@ -9,6 +10,8 @@ export declare enum Phase {
     RETRO_LEARNING = "retro-learning"
 }
 export declare enum RoleType {
+    FEATURE = "feature",
+    BUG = "bug",
     QUESTION = "question",
     CLAIM = "claim",
     COUNTER_CLAIM = "counter-claim",

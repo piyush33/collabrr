@@ -30,7 +30,7 @@ exports.AuthModule = AuthModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([profileuser_entity_1.ProfileUser]),
             jwt_1.JwtModule.register({
                 secret: process.env.JWT_SECRET || 'secretKey',
-                signOptions: { expiresIn: '1h' },
+                signOptions: { expiresIn: '7d' },
             }),
             profileusers_module_1.ProfileusersModule,
         ],

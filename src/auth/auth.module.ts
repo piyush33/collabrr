@@ -18,7 +18,7 @@ import { ProfileUser } from 'src/profileusers/profileuser.entity';
     TypeOrmModule.forFeature([ProfileUser]),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'secretKey', // Use a secure secret in production
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '7d' },
     }),
     ProfileusersModule,
   ],

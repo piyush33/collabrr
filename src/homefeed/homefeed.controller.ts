@@ -14,13 +14,13 @@ import {
 import { HomefeedService } from './homefeed.service';
 import { Homefeed } from './homefeed.entity';
 import { LayerGuard } from './layer.guard';
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 type CreateBody = Partial<Homefeed> & {
   allowedMemberIds?: number[]; // only used when visibility === 'team'
 };
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('orgs/:orgId/homefeed')
 export class HomefeedController {
   constructor(private readonly homefeedService: HomefeedService) {}

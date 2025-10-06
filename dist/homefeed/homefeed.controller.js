@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomefeedController = void 0;
 const common_1 = require("@nestjs/common");
 const homefeed_service_1 = require("./homefeed.service");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let HomefeedController = class HomefeedController {
     constructor(homefeedService) {
         this.homefeedService = homefeedService;
@@ -101,6 +102,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], HomefeedController.prototype, "getLayerCards", null);
 exports.HomefeedController = HomefeedController = __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('orgs/:orgId/homefeed'),
     __metadata("design:paramtypes", [homefeed_service_1.HomefeedService])
 ], HomefeedController);
