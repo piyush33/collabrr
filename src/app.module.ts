@@ -48,6 +48,9 @@ import { InvitationModule } from './invitation/invitation.module';
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
         synchronize: true,
+        ssl: {
+          rejectUnauthorized: false, // for RDS without providing full CA chain
+        },
       }),
       inject: [ConfigService],
     }),
