@@ -6,6 +6,7 @@
 // as the seed card that would start the space.
 import { ROLE_IDS, VOICE_GUIDE, atRefs, clip, sha256 } from './ai-prompts';
 import { geminiJson } from './gemini';
+import { normalizeCategory } from '../category';
 
 export const SPACE_IDEAS_KIND = 'space-ideas';
 // Bump when the prompt or output shape changes, so saved results regenerate.
@@ -42,34 +43,7 @@ export const IDEA_KINDS = [
   'blind-spot', // something this category plainly needs that nobody covers
 ];
 
-// Same normalisation as the Explore page, so a card's category matches the
-// category the user picked there.
-const CATEGORY_ALIASES: Record<string, string> = {
-  'company-os': 'company-os',
-  product: 'product',
-  roadmap: 'roadmap',
-  documentation: 'docs',
-  docs: 'docs',
-  engineering: 'engineering',
-  marketing: 'marketing',
-  design: 'design',
-  operations: 'operations',
-  ops: 'operations',
-  meetings: 'meetings',
-  data: 'data',
-  'data-analytics': 'data',
-  'data-and-analytics': 'data',
-};
-export const normalizeCategory = (raw?: string | null) => {
-  const slug = (raw ?? '')
-    .toLowerCase()
-    .trim()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  if (!slug) return 'uncategorized';
-  return CATEGORY_ALIASES[slug] ?? slug;
-};
+export { normalizeCategory } from '../category';
 
 /** The fields of a card this feature reads. */
 export type FeedCard = {

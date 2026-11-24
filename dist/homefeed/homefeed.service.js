@@ -478,6 +478,24 @@ let HomefeedService = class HomefeedService {
         const topup = await topupQb.getMany();
         return [...rec, ...topup];
     }
+    async visibleCardsQuery(activeOrgId, username) {
+        const me = await this.loadUser(username);
+        const mem = await this.getOrgMembership(activeOrgId, me.id);
+        const qb = this.homefeedRepository
+            .createQueryBuilder('h')
+            .leftJoin('h.createdBy', 'author')
+            .leftJoinAndSelect('h.layer', 'layer')
+            .leftJoinAndSelect('h.team', 'team')
+            .where('h.organizationId = :orgId', { orgId: activeOrgId })
+            .setParameters({ userId: me.id });
+        this.applyVisibilityClause(qb, me.id);
+        if (mem.role === organization_member_entity_1.OrgRole.GUEST)
+            this.restrictGuestToMyLayers(qb, me.id);
+        qb.andWhere('(h.privacy IS NOT TRUE OR h.username = :meName)', {
+            meName: me.username,
+        });
+        return { qb, me };
+    }
     async assertMember(activeOrgId, username) {
         const me = await this.loadUser(username);
         await this.getOrgMembership(activeOrgId, me.id);

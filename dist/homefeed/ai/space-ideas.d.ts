@@ -1,7 +1,7 @@
 export declare const SPACE_IDEAS_KIND = "space-ideas";
 export declare const IDEAS_MIN_CARDS = 3;
 export declare const IDEA_KINDS: string[];
-export declare const normalizeCategory: (raw?: string | null) => string;
+export { normalizeCategory } from '../category';
 export type FeedCard = {
     id: number;
     title?: string | null;
@@ -88,4 +88,3 @@ export declare function runIdeas(p: PreparedIdeas, apiKey: string, model: string
     };
     generatedAt: string;
 }>;
-export {};

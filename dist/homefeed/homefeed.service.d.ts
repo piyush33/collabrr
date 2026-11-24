@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Homefeed } from './homefeed.entity';
 import { UserInteraction } from './user-interaction.entity';
 import { ProfileUser } from 'src/profileusers/profileuser.entity';
@@ -44,6 +44,10 @@ export declare class HomefeedService {
         onlyLayered?: boolean;
     }): Promise<Homefeed[]>;
     private fetchRandomItemsBasedOnUserPreferences;
+    visibleCardsQuery(activeOrgId: number, username: string): Promise<{
+        qb: SelectQueryBuilder<Homefeed>;
+        me: ProfileUser;
+    }>;
     assertMember(activeOrgId: number, username: string): Promise<void>;
     assertLayerAccess(activeOrgId: number, username: string, layerId: number): Promise<{
         me: ProfileUser;
