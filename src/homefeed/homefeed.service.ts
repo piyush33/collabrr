@@ -702,12 +702,15 @@ export class HomefeedService {
   }
 
   /** Cards in a layer that the user can see (any visibility), ordered by recency. */
-  async getLayerFeed(
+  /**
+   * Same access rules as reading a layer's cards: active org member, and
+   * guests only for layers they belong to. Throws when not allowed.
+   */
+  async assertLayerAccess(
     activeOrgId: number,
     username: string,
     layerId: number,
-    limit = 50,
-  ): Promise<Homefeed[]> {
+  ) {
     const me = await this.loadUser(username);
     const mem = await this.getOrgMembership(activeOrgId, me.id);
 
@@ -725,6 +728,20 @@ export class HomefeedService {
           'Guests can only access their member layers',
         );
     }
+    return { me, mem, layer };
+  }
+
+  async getLayerFeed(
+    activeOrgId: number,
+    username: string,
+    layerId: number,
+    limit = 50,
+  ): Promise<Homefeed[]> {
+    const { me, mem } = await this.assertLayerAccess(
+      activeOrgId,
+      username,
+      layerId,
+    );
 
     const qb = this.homefeedRepository
       .createQueryBuilder('h')

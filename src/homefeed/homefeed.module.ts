@@ -14,6 +14,9 @@ import { TeamMember } from 'src/organization/team-member.entity';
 import { TeamCardAccess } from 'src/organization/team-card-access.entity';
 import { LinkedCardLayer } from './linked-card-layer.entity';
 import { LayerMember } from './layer-member.entity';
+import { LayerSummary } from './layer-summary.entity';
+import { LayerSummaryService } from './layer-summary.service';
+import { LayerSummaryController } from './layer-summary.controller';
 import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
@@ -29,14 +32,15 @@ import { NotificationModule } from 'src/notification/notification.module';
       TeamCardAccess,
       LinkedCardLayer,
       LayerMember,
+      LayerSummary,
     ]),
     NotificationModule,
     // If you have an OrganizationModule that exports TypeOrmModule.forFeature([...]),
     // you could import it here instead, but you must ensure OrganizationMember is exported.
     // OrganizationModule,
   ],
-  controllers: [HomefeedController],
-  providers: [HomefeedService],
+  controllers: [HomefeedController, LayerSummaryController],
+  providers: [HomefeedService, LayerSummaryService],
   exports: [HomefeedService],
 })
 export class HomefeedModule {}
