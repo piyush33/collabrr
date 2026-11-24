@@ -71,14 +71,16 @@ export class LayerSummaryService {
       { conflictPaths: ['layer', 'signature'] },
     );
 
-    // keep only the most recent summaries for this layer
-    const stale = await this.repo.find({
-      where: { layer: { id: layerId } },
-      order: { updatedAt: 'DESC' },
-      skip: KEEP_PER_LAYER,
-      select: { id: true },
-    });
-    if (stale.length) await this.repo.delete(stale.map((s) => s.id));
+    // Keep only the most recent rows for this layer. Plain SQL: TypeORM's
+    // find() with a relation filter + skip wraps the query in a DISTINCT
+    // subquery that can't ORDER BY updatedAt, and fails in Postgres.
+    const { tableName } = this.repo.metadata;
+    await this.repo.query(
+      `DELETE FROM "${tableName}" WHERE "layerId" = $1 AND id NOT IN (
+         SELECT id FROM "${tableName}" WHERE "layerId" = $1
+         ORDER BY "updatedAt" DESC LIMIT $2)`,
+      [layerId, KEEP_PER_LAYER],
+    );
 
     return { ok: true };
   }
