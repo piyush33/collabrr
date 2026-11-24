@@ -4,6 +4,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // AI requests carry a space's cards (up to 200); the default 100kb is too small.
+  app.useBodyParser('json', { limit: '1mb' });
   app.enableCors({
     origin: (origin, cb) => {
       const allowlist = [

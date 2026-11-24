@@ -17,6 +17,9 @@ import { LayerMember } from './layer-member.entity';
 import { LayerSummary } from './layer-summary.entity';
 import { LayerSummaryService } from './layer-summary.service';
 import { LayerSummaryController } from './layer-summary.controller';
+import { AiJob } from './ai/ai-job.entity';
+import { AiService } from './ai/ai.service';
+import { AiController } from './ai/ai.controller';
 import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
@@ -33,14 +36,15 @@ import { NotificationModule } from 'src/notification/notification.module';
       LinkedCardLayer,
       LayerMember,
       LayerSummary,
+      AiJob,
     ]),
     NotificationModule,
     // If you have an OrganizationModule that exports TypeOrmModule.forFeature([...]),
     // you could import it here instead, but you must ensure OrganizationMember is exported.
     // OrganizationModule,
   ],
-  controllers: [HomefeedController, LayerSummaryController],
-  providers: [HomefeedService, LayerSummaryService],
+  controllers: [HomefeedController, LayerSummaryController, AiController],
+  providers: [HomefeedService, LayerSummaryService, AiService],
   exports: [HomefeedService],
 })
 export class HomefeedModule {}
