@@ -21,6 +21,9 @@ const team_member_entity_1 = require("../organization/team-member.entity");
 const team_card_access_entity_1 = require("../organization/team-card-access.entity");
 const linked_card_layer_entity_1 = require("./linked-card-layer.entity");
 const layer_member_entity_1 = require("./layer-member.entity");
+const layer_summary_entity_1 = require("./layer-summary.entity");
+const layer_summary_service_1 = require("./layer-summary.service");
+const layer_summary_controller_1 = require("./layer-summary.controller");
 const notification_module_1 = require("../notification/notification.module");
 let HomefeedModule = class HomefeedModule {
 };
@@ -39,11 +42,12 @@ exports.HomefeedModule = HomefeedModule = __decorate([
                 team_card_access_entity_1.TeamCardAccess,
                 linked_card_layer_entity_1.LinkedCardLayer,
                 layer_member_entity_1.LayerMember,
+                layer_summary_entity_1.LayerSummary,
             ]),
             notification_module_1.NotificationModule,
         ],
-        controllers: [homefeed_controller_1.HomefeedController],
-        providers: [homefeed_service_1.HomefeedService],
+        controllers: [homefeed_controller_1.HomefeedController, layer_summary_controller_1.LayerSummaryController],
+        providers: [homefeed_service_1.HomefeedService, layer_summary_service_1.LayerSummaryService],
         exports: [homefeed_service_1.HomefeedService],
     })
 ], HomefeedModule);
