@@ -478,6 +478,10 @@ let HomefeedService = class HomefeedService {
         const topup = await topupQb.getMany();
         return [...rec, ...topup];
     }
+    async assertMember(activeOrgId, username) {
+        const me = await this.loadUser(username);
+        await this.getOrgMembership(activeOrgId, me.id);
+    }
     async assertLayerAccess(activeOrgId, username, layerId) {
         const me = await this.loadUser(username);
         const mem = await this.getOrgMembership(activeOrgId, me.id);

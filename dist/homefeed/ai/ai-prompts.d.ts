@@ -44,4 +44,6 @@ export declare class InputError extends Error {
 }
 export declare const SUGGEST_MIN_CARDS = 3;
 export declare function prepare(kind: AiKind, model: string, body: SpaceBody): Prepared;
+export declare const VOICE_GUIDE: string;
+export declare const atRefs: (s: string, ids: Set<number>) => string;
 export declare function generate(p: Prepared, apiKey: string, model: string): Promise<Record<string, unknown> | null>;
