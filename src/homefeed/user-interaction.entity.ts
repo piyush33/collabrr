@@ -4,15 +4,15 @@ import { Homefeed } from '../homefeed/homefeed.entity';
 
 @Entity()
 export class UserInteraction {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => ProfileUser, (user) => user.interactions)
-    user: ProfileUser;
+  @ManyToOne(() => ProfileUser, (user) => user.interactions)
+  user: ProfileUser;
 
-    @ManyToOne(() => Homefeed, (homefeed) => homefeed.interactions)
-    homefeedItem: Homefeed;
+  @ManyToOne(() => Homefeed, (homefeed) => homefeed.interactions)
+  homefeedItem: Homefeed;
 
-    @Column()
-    interactionType: string; // 'like', 'repost', 'save', etc.
+  @Column()
+  interactionType: string; // 'like', 'repost', 'save', etc.
 }

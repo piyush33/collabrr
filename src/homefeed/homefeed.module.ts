@@ -23,6 +23,8 @@ import { AiController } from './ai/ai.controller';
 import { OrgAiResult } from './ai/org-ai-result.entity';
 import { SpaceIdeasService } from './ai/space-ideas.service';
 import { SpaceIdeasController } from './ai/space-ideas.controller';
+import { FeedService } from './feed.service';
+import { FeedController } from './feed.controller';
 import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
@@ -52,12 +54,14 @@ import { NotificationModule } from 'src/notification/notification.module';
     LayerSummaryController,
     AiController,
     SpaceIdeasController,
+    FeedController,
   ],
   providers: [
     HomefeedService,
     LayerSummaryService,
     AiService,
     SpaceIdeasService,
+    FeedService,
   ],
   exports: [HomefeedService],
 })

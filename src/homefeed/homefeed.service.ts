@@ -701,6 +701,31 @@ export class HomefeedService {
     return [...rec, ...topup];
   }
 
+  /**
+   * Base query over every card in the org this user may see: the same
+   * visibility and guest rules as the feed, plus private cards only for
+   * their author. Joins layer and team like the feed does.
+   */
+  async visibleCardsQuery(activeOrgId: number, username: string) {
+    const me = await this.loadUser(username);
+    const mem = await this.getOrgMembership(activeOrgId, me.id);
+
+    const qb = this.homefeedRepository
+      .createQueryBuilder('h')
+      .leftJoin('h.createdBy', 'author')
+      .leftJoinAndSelect('h.layer', 'layer')
+      .leftJoinAndSelect('h.team', 'team')
+      .where('h.organizationId = :orgId', { orgId: activeOrgId })
+      .setParameters({ userId: me.id });
+
+    this.applyVisibilityClause(qb, me.id);
+    if (mem.role === OrgRole.GUEST) this.restrictGuestToMyLayers(qb, me.id);
+    qb.andWhere('(h.privacy IS NOT TRUE OR h.username = :meName)', {
+      meName: me.username,
+    });
+    return { qb, me };
+  }
+
   /** Throws unless the user is an active member of the org. */
   async assertMember(activeOrgId: number, username: string) {
     const me = await this.loadUser(username);

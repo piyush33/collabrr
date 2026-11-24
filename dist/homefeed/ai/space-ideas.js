@@ -5,6 +5,7 @@ exports.prepareIdeas = prepareIdeas;
 exports.runIdeas = runIdeas;
 const ai_prompts_1 = require("./ai-prompts");
 const gemini_1 = require("./gemini");
+const category_1 = require("../category");
 exports.SPACE_IDEAS_KIND = 'space-ideas';
 const VERSION = 1;
 exports.IDEAS_MIN_CARDS = 3;
@@ -35,34 +36,8 @@ exports.IDEA_KINDS = [
     'tension',
     'blind-spot',
 ];
-const CATEGORY_ALIASES = {
-    'company-os': 'company-os',
-    product: 'product',
-    roadmap: 'roadmap',
-    documentation: 'docs',
-    docs: 'docs',
-    engineering: 'engineering',
-    marketing: 'marketing',
-    design: 'design',
-    operations: 'operations',
-    ops: 'operations',
-    meetings: 'meetings',
-    data: 'data',
-    'data-analytics': 'data',
-    'data-and-analytics': 'data',
-};
-const normalizeCategory = (raw) => {
-    const slug = (raw ?? '')
-        .toLowerCase()
-        .trim()
-        .replace(/&/g, 'and')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-    if (!slug)
-        return 'uncategorized';
-    return CATEGORY_ALIASES[slug] ?? slug;
-};
-exports.normalizeCategory = normalizeCategory;
+var category_2 = require("../category");
+Object.defineProperty(exports, "normalizeCategory", { enumerable: true, get: function () { return category_2.normalizeCategory; } });
 class IdeasInputError extends Error {
 }
 exports.IdeasInputError = IdeasInputError;
@@ -93,7 +68,7 @@ function buildSpaces(cards, topics, targetId) {
             : list;
         const cats = new Map();
         list.forEach((c) => {
-            const k = (0, exports.normalizeCategory)(c.category);
+            const k = (0, category_1.normalizeCategory)(c.category);
             cats.set(k, (cats.get(k) ?? 0) + 1);
         });
         const category = [...cats].sort((a, b) => b[1] - a[1])[0][0];
