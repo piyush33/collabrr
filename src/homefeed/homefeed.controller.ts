@@ -105,7 +105,8 @@ export class HomefeedController {
     @Query('username') username: string,
     @Query('limit') limit?: string,
   ) {
-    const lim = Number(limit ?? 50) || 50;
+    // A space shows all of its cards; `limit` is only applied when asked for.
+    const lim = Number(limit) > 0 ? Number(limit) : undefined;
     return this.homefeedService.getLayerFeed(orgId, username, layerId, lim);
   }
 }
