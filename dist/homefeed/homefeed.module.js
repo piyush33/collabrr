@@ -24,6 +24,9 @@ const layer_member_entity_1 = require("./layer-member.entity");
 const layer_summary_entity_1 = require("./layer-summary.entity");
 const layer_summary_service_1 = require("./layer-summary.service");
 const layer_summary_controller_1 = require("./layer-summary.controller");
+const ai_job_entity_1 = require("./ai/ai-job.entity");
+const ai_service_1 = require("./ai/ai.service");
+const ai_controller_1 = require("./ai/ai.controller");
 const notification_module_1 = require("../notification/notification.module");
 let HomefeedModule = class HomefeedModule {
 };
@@ -43,11 +46,12 @@ exports.HomefeedModule = HomefeedModule = __decorate([
                 linked_card_layer_entity_1.LinkedCardLayer,
                 layer_member_entity_1.LayerMember,
                 layer_summary_entity_1.LayerSummary,
+                ai_job_entity_1.AiJob,
             ]),
             notification_module_1.NotificationModule,
         ],
-        controllers: [homefeed_controller_1.HomefeedController, layer_summary_controller_1.LayerSummaryController],
-        providers: [homefeed_service_1.HomefeedService, layer_summary_service_1.LayerSummaryService],
+        controllers: [homefeed_controller_1.HomefeedController, layer_summary_controller_1.LayerSummaryController, ai_controller_1.AiController],
+        providers: [homefeed_service_1.HomefeedService, layer_summary_service_1.LayerSummaryService, ai_service_1.AiService],
         exports: [homefeed_service_1.HomefeedService],
     })
 ], HomefeedModule);
