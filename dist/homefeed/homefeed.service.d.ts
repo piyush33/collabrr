@@ -44,6 +44,7 @@ export declare class HomefeedService {
         onlyLayered?: boolean;
     }): Promise<Homefeed[]>;
     private fetchRandomItemsBasedOnUserPreferences;
+    assertMember(activeOrgId: number, username: string): Promise<void>;
     assertLayerAccess(activeOrgId: number, username: string, layerId: number): Promise<{
         me: ProfileUser;
         mem: OrganizationMember;

@@ -20,6 +20,9 @@ import { LayerSummaryController } from './layer-summary.controller';
 import { AiJob } from './ai/ai-job.entity';
 import { AiService } from './ai/ai.service';
 import { AiController } from './ai/ai.controller';
+import { OrgAiResult } from './ai/org-ai-result.entity';
+import { SpaceIdeasService } from './ai/space-ideas.service';
+import { SpaceIdeasController } from './ai/space-ideas.controller';
 import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
@@ -37,14 +40,25 @@ import { NotificationModule } from 'src/notification/notification.module';
       LayerMember,
       LayerSummary,
       AiJob,
+      OrgAiResult,
     ]),
     NotificationModule,
     // If you have an OrganizationModule that exports TypeOrmModule.forFeature([...]),
     // you could import it here instead, but you must ensure OrganizationMember is exported.
     // OrganizationModule,
   ],
-  controllers: [HomefeedController, LayerSummaryController, AiController],
-  providers: [HomefeedService, LayerSummaryService, AiService],
+  controllers: [
+    HomefeedController,
+    LayerSummaryController,
+    AiController,
+    SpaceIdeasController,
+  ],
+  providers: [
+    HomefeedService,
+    LayerSummaryService,
+    AiService,
+    SpaceIdeasService,
+  ],
   exports: [HomefeedService],
 })
 export class HomefeedModule {}

@@ -366,7 +366,7 @@ type SuggestionOut = {
 // How a card should read, by phase first and then by role type. Cards are
 // not all to-dos: most phases are about framing, arguing, evidencing and
 // deciding, so the wording has to match what the card is for.
-const VOICE_GUIDE = [
+export const VOICE_GUIDE = [
   'VOICE GUIDE. First pick the role types that fit the gap, then write the card in the voice of its PHASE first and its ROLE TYPES second. Only execution work reads like a to-do list; most cards are statements, arguments, findings or decisions written in first-person plural or as plain assertions, not instructions.',
   'Phase voice (match phase labels by meaning; custom labels map to the closest):',
   '- Backlog / pending: a parked item stated neutrally, with why it was parked and what would revive it.',
@@ -398,7 +398,7 @@ const VOICE_GUIDE = [
 ].join('\n');
 
 /** "#49" -> "@49" for ids of real cards (the app links cards with @id). */
-const atRefs = (s: string, ids: Set<number>) =>
+export const atRefs = (s: string, ids: Set<number>) =>
   s.replace(/#(\d+)\b/g, (m, d) => (ids.has(Number(d)) ? `@${d}` : m));
 
 async function runSuggestions(p: Prepared, apiKey: string, model: string) {

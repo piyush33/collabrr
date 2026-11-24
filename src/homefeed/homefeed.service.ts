@@ -701,7 +701,12 @@ export class HomefeedService {
     return [...rec, ...topup];
   }
 
-  /** Cards in a layer that the user can see (any visibility), ordered by recency. */
+  /** Throws unless the user is an active member of the org. */
+  async assertMember(activeOrgId: number, username: string) {
+    const me = await this.loadUser(username);
+    await this.getOrgMembership(activeOrgId, me.id);
+  }
+
   /**
    * Same access rules as reading a layer's cards: active org member, and
    * guests only for layers they belong to. Throws when not allowed.

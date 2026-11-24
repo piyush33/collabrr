@@ -27,6 +27,9 @@ const layer_summary_controller_1 = require("./layer-summary.controller");
 const ai_job_entity_1 = require("./ai/ai-job.entity");
 const ai_service_1 = require("./ai/ai.service");
 const ai_controller_1 = require("./ai/ai.controller");
+const org_ai_result_entity_1 = require("./ai/org-ai-result.entity");
+const space_ideas_service_1 = require("./ai/space-ideas.service");
+const space_ideas_controller_1 = require("./ai/space-ideas.controller");
 const notification_module_1 = require("../notification/notification.module");
 let HomefeedModule = class HomefeedModule {
 };
@@ -47,11 +50,22 @@ exports.HomefeedModule = HomefeedModule = __decorate([
                 layer_member_entity_1.LayerMember,
                 layer_summary_entity_1.LayerSummary,
                 ai_job_entity_1.AiJob,
+                org_ai_result_entity_1.OrgAiResult,
             ]),
             notification_module_1.NotificationModule,
         ],
-        controllers: [homefeed_controller_1.HomefeedController, layer_summary_controller_1.LayerSummaryController, ai_controller_1.AiController],
-        providers: [homefeed_service_1.HomefeedService, layer_summary_service_1.LayerSummaryService, ai_service_1.AiService],
+        controllers: [
+            homefeed_controller_1.HomefeedController,
+            layer_summary_controller_1.LayerSummaryController,
+            ai_controller_1.AiController,
+            space_ideas_controller_1.SpaceIdeasController,
+        ],
+        providers: [
+            homefeed_service_1.HomefeedService,
+            layer_summary_service_1.LayerSummaryService,
+            ai_service_1.AiService,
+            space_ideas_service_1.SpaceIdeasService,
+        ],
         exports: [homefeed_service_1.HomefeedService],
     })
 ], HomefeedModule);
