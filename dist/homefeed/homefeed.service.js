@@ -499,7 +499,7 @@ let HomefeedService = class HomefeedService {
         }
         return { me, mem, layer };
     }
-    async getLayerFeed(activeOrgId, username, layerId, limit = 50) {
+    async getLayerFeed(activeOrgId, username, layerId, limit) {
         const { me, mem } = await this.assertLayerAccess(activeOrgId, username, layerId);
         const qb = this.homefeedRepository
             .createQueryBuilder('h')
@@ -512,7 +512,9 @@ let HomefeedService = class HomefeedService {
         this.applyVisibilityClause(qb, me.id);
         if (mem.role === organization_member_entity_1.OrgRole.GUEST)
             this.restrictGuestToMyLayers(qb, me.id);
-        qb.orderBy('h.createdAt', 'DESC').limit(limit);
+        qb.orderBy('h.createdAt', 'DESC');
+        if (limit)
+            qb.limit(limit);
         return qb.getMany();
     }
 };

@@ -40,7 +40,7 @@ let HomefeedController = class HomefeedController {
         return this.homefeedService.remove(orgId, id, username);
     }
     getLayerCards(orgId, layerId, username, limit) {
-        const lim = Number(limit ?? 50) || 50;
+        const lim = Number(limit) > 0 ? Number(limit) : undefined;
         return this.homefeedService.getLayerFeed(orgId, username, layerId, lim);
     }
 };

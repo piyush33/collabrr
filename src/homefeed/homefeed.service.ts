@@ -740,7 +740,7 @@ export class HomefeedService {
     activeOrgId: number,
     username: string,
     layerId: number,
-    limit = 50,
+    limit?: number,
   ): Promise<Homefeed[]> {
     const { me, mem } = await this.assertLayerAccess(
       activeOrgId,
@@ -760,7 +760,8 @@ export class HomefeedService {
     this.applyVisibilityClause(qb, me.id);
     if (mem.role === OrgRole.GUEST) this.restrictGuestToMyLayers(qb, me.id);
 
-    qb.orderBy('h.createdAt', 'DESC').limit(limit);
+    qb.orderBy('h.createdAt', 'DESC');
+    if (limit) qb.limit(limit);
     return qb.getMany();
   }
 }
