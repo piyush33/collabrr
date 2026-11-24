@@ -478,7 +478,7 @@ let HomefeedService = class HomefeedService {
         const topup = await topupQb.getMany();
         return [...rec, ...topup];
     }
-    async getLayerFeed(activeOrgId, username, layerId, limit = 50) {
+    async assertLayerAccess(activeOrgId, username, layerId) {
         const me = await this.loadUser(username);
         const mem = await this.getOrgMembership(activeOrgId, me.id);
         const layer = await this.layerRepo.findOne({
@@ -493,6 +493,10 @@ let HomefeedService = class HomefeedService {
             if (!isMember)
                 throw new common_1.ForbiddenException('Guests can only access their member layers');
         }
+        return { me, mem, layer };
+    }
+    async getLayerFeed(activeOrgId, username, layerId, limit = 50) {
+        const { me, mem } = await this.assertLayerAccess(activeOrgId, username, layerId);
         const qb = this.homefeedRepository
             .createQueryBuilder('h')
             .leftJoin('h.createdBy', 'author')
