@@ -30,6 +30,8 @@ const ai_controller_1 = require("./ai/ai.controller");
 const org_ai_result_entity_1 = require("./ai/org-ai-result.entity");
 const space_ideas_service_1 = require("./ai/space-ideas.service");
 const space_ideas_controller_1 = require("./ai/space-ideas.controller");
+const feed_service_1 = require("./feed.service");
+const feed_controller_1 = require("./feed.controller");
 const notification_module_1 = require("../notification/notification.module");
 let HomefeedModule = class HomefeedModule {
 };
@@ -59,12 +61,14 @@ exports.HomefeedModule = HomefeedModule = __decorate([
             layer_summary_controller_1.LayerSummaryController,
             ai_controller_1.AiController,
             space_ideas_controller_1.SpaceIdeasController,
+            feed_controller_1.FeedController,
         ],
         providers: [
             homefeed_service_1.HomefeedService,
             layer_summary_service_1.LayerSummaryService,
             ai_service_1.AiService,
             space_ideas_service_1.SpaceIdeasService,
+            feed_service_1.FeedService,
         ],
         exports: [homefeed_service_1.HomefeedService],
     })
