@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { LeadsModule } from './leads/leads.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -68,6 +69,7 @@ import { InvitationModule } from './invitation/invitation.module';
     S3Module,
     OrganizationModule,
     InvitationModule,
+    LeadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
