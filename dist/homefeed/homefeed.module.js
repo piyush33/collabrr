@@ -33,6 +33,10 @@ const space_ideas_controller_1 = require("./ai/space-ideas.controller");
 const feed_service_1 = require("./feed.service");
 const feed_controller_1 = require("./feed.controller");
 const notification_module_1 = require("../notification/notification.module");
+const think_entities_1 = require("./think/think.entities");
+const think_service_1 = require("./think/think.service");
+const converge_service_1 = require("./think/converge.service");
+const think_controller_1 = require("./think/think.controller");
 let HomefeedModule = class HomefeedModule {
 };
 exports.HomefeedModule = HomefeedModule;
@@ -53,6 +57,10 @@ exports.HomefeedModule = HomefeedModule = __decorate([
                 layer_summary_entity_1.LayerSummary,
                 ai_job_entity_1.AiJob,
                 org_ai_result_entity_1.OrgAiResult,
+                think_entities_1.ThinkTask,
+                think_entities_1.ConvergeReading,
+                think_entities_1.ConvergeVote,
+                think_entities_1.ConvergeTimer,
             ]),
             notification_module_1.NotificationModule,
         ],
@@ -62,6 +70,7 @@ exports.HomefeedModule = HomefeedModule = __decorate([
             ai_controller_1.AiController,
             space_ideas_controller_1.SpaceIdeasController,
             feed_controller_1.FeedController,
+            think_controller_1.ThinkController,
         ],
         providers: [
             homefeed_service_1.HomefeedService,
@@ -69,6 +78,8 @@ exports.HomefeedModule = HomefeedModule = __decorate([
             ai_service_1.AiService,
             space_ideas_service_1.SpaceIdeasService,
             feed_service_1.FeedService,
+            think_service_1.ThinkService,
+            converge_service_1.ConvergeService,
         ],
         exports: [homefeed_service_1.HomefeedService],
     })

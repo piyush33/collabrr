@@ -26,6 +26,15 @@ import { SpaceIdeasController } from './ai/space-ideas.controller';
 import { FeedService } from './feed.service';
 import { FeedController } from './feed.controller';
 import { NotificationModule } from 'src/notification/notification.module';
+import {
+  ConvergeReading,
+  ConvergeTimer,
+  ConvergeVote,
+  ThinkTask,
+} from './think/think.entities';
+import { ThinkService } from './think/think.service';
+import { ConvergeService } from './think/converge.service';
+import { ThinkController } from './think/think.controller';
 
 @Module({
   imports: [
@@ -43,6 +52,10 @@ import { NotificationModule } from 'src/notification/notification.module';
       LayerSummary,
       AiJob,
       OrgAiResult,
+      ThinkTask,
+      ConvergeReading,
+      ConvergeVote,
+      ConvergeTimer,
     ]),
     NotificationModule,
     // If you have an OrganizationModule that exports TypeOrmModule.forFeature([...]),
@@ -55,6 +68,7 @@ import { NotificationModule } from 'src/notification/notification.module';
     AiController,
     SpaceIdeasController,
     FeedController,
+    ThinkController,
   ],
   providers: [
     HomefeedService,
@@ -62,6 +76,8 @@ import { NotificationModule } from 'src/notification/notification.module';
     AiService,
     SpaceIdeasService,
     FeedService,
+    ThinkService,
+    ConvergeService,
   ],
   exports: [HomefeedService],
 })
